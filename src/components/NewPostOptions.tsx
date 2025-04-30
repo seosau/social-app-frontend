@@ -1,5 +1,8 @@
+'use client';
 import { Avatar, Box, Divider, Button } from "@mui/material";
 import { icons } from "@/untils";
+import { useState } from "react";
+import { NewPostPopup } from "./NewPostPopup";
 
 
 const commonSx = {
@@ -17,6 +20,14 @@ const commonSx = {
 };
 
 export function NewPostOptions() {
+  const [openPopup, setOpenPopup] = useState(false);
+
+  const handleOpenPopup = () => {
+    setOpenPopup(true);
+  }
+  const handleOClosePopup = () => {
+    setOpenPopup(false);
+  }
   return (
     <Box
       display="flex"
@@ -29,10 +40,11 @@ export function NewPostOptions() {
       border={1}
       borderColor={"grey.300"}
       borderRadius={2}
-      boxShadow={3}
+      boxShadow={1}
       padding={2}
 
     >
+      <NewPostPopup open={openPopup} onClose={handleOClosePopup} />
       <Box
         display="flex"
         flexDirection="row"
@@ -48,6 +60,7 @@ export function NewPostOptions() {
           sx={{ width: 40, height: 40, border: 1, borderColor: "grey.300" }}
         />
         <Button
+          onClick={handleOpenPopup}
           sx={{
             fontSize: 15,
             color: "text.secondary",
