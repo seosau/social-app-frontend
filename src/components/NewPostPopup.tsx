@@ -40,10 +40,10 @@ export function NewPostPopup({open, onClose}: NewPostPopupProps) {
 
   const onSubmit = (data: FormData) => {
     const formData = new FormData();
-    formData.append('title', data.access);
+    formData.append('access', data.access);
     formData.append('content', data.content);
     formData.append('image', (data.image as FileList)[0]);
-    instance.post('/post', data).then((res) => {
+    instance.post('/post', formData).then((res) => {
       if (res.status == 201) {
         console.log('Tao bai post thanh cong: ', res)
       }
