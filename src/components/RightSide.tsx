@@ -1,7 +1,19 @@
+'use client'
+import { IUser } from "@/interfaces/user.interfaces";
 import { Avatar, Box } from "@mui/material";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export function RightSide() {
+    const [user, setUser] = useState<IUser>();
+
+    useEffect(() => {
+        const userExisted = localStorage.getItem('user');
+        if (userExisted) {
+            setUser(JSON.parse(userExisted));
+        }
+    }, [])
+
     return (
         <Box
             display="flex"
@@ -21,7 +33,7 @@ export function RightSide() {
                 padding={0}
                 width={"100%"}
             >
-                <Link href={"/profile/userId"}
+                <Link href={`/profile/${user?.id}`}
                     className="flex flex-row gap-2 items-center justify-start"
                 >
                     <Avatar 
