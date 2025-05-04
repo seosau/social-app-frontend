@@ -170,7 +170,7 @@ export function Post({post}: Post) {
                     gap={2}
                 >
                     <ImageList cols={2} rowHeight={"auto"}>
-                        {itemData.map((item) => (
+                        {/* {itemData.map((item) => (
                             <ImageListItem key={item.img}>
                                 <img
                                     // srcSet={`${item.img}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
@@ -180,7 +180,14 @@ export function Post({post}: Post) {
                                     loading="lazy"
                                 />
                             </ImageListItem>
-                        ))}
+                        ))} */}
+                            <ImageListItem>
+                                <img
+                                    src={post.image}
+                                    alt={post.content}
+                                    loading="lazy"
+                                />
+                            </ImageListItem>
                     </ImageList>
                 </Box>
             </Box>

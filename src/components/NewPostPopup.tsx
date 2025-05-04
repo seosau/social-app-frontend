@@ -45,12 +45,12 @@ export function NewPostPopup({open, onClose}: NewPostPopupProps) {
     formData.append('image', (data.image as FileList)[0]);
     instance.post('/post', formData).then((res) => {
       if (res.status == 201) {
-        console.log('Tao bai post thanh cong: ', res)
+        alert('This Post was Created!')
+        onClose();
       }
     }).catch((err) => {
-      console.log('Loi khi tao bai post: ', err)
+      console.error('Loi khi tao bai post: ', err)
     })
-    console.log(data);
   }
 
   if (!open) return null; 

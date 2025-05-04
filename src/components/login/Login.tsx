@@ -27,10 +27,9 @@ export function LoginComp() {
         instance.post('/auth/login', data).then((res) => {
             alert("Login successfully!");
             window.localStorage.setItem('user', JSON.stringify(res.data));
-            console.log('========================= ', localStorage.getItem('user'))
             route.push('/')
         }).catch((error) => {
-            console.log('Login error: ', error.message)
+            console.error('Login error: ', error.message)
         })
     }
 

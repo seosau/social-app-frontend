@@ -1,5 +1,7 @@
+import { ProfileComp } from "@/components";
+
 export default function Profile () {
     return (
-        <h1>Profile detail</h1>
+        <ProfileComp />
     )
 }
