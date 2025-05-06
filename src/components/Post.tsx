@@ -1,20 +1,14 @@
-import { Avatar, Box, Button, Typography, ImageList, ImageListItem, Divider, colors } from "@mui/material";
-import { icons } from "@/untils";
+'use client'
 
-const itemData = [
-    {
-      img: 'https://images.unsplash.com/photo-1551963831-b3b1ca40c98e',
-      title: 'Breakfast',
-    },
-    {
-      img: 'https://images.unsplash.com/photo-1551782450-a2132b4ba21d',
-      title: 'Burger',
-    },
-    {
-      img: 'https://images.unsplash.com/photo-1522770179533-24471fcdba45',
-      title: 'Camera',
-    },
-  ];
+import { Avatar, Box, Button, Typography, ImageList, ImageListItem, Divider, colors, Menu, MenuItem } from "@mui/material";
+import { icons } from "@/untils";
+import Link from "next/link";
+import { IUser } from "@/interfaces/user.interfaces";
+import { IPost } from "@/interfaces/post.interfaces";
+import { useEffect, useState } from "react";
+import { instance } from "@/lib/axios";
+import React from "react";
+
 const interactButtonSx = {
     display: "flex",
     flexDirection: "row",
@@ -31,25 +25,61 @@ const likedButtonSx = {
     color: colors.blue[500],
 }
 
-type UserType = {
-    id: string,
-    fullName: string,
-    email: string
-}
-
-type PostType = {
-    id: string,
-    access: string,
-    content: string,
-    image: string,
-    user: UserType
-}
-
 type Post = {
-    post: PostType
+    post: IPost
 }
 
 export function Post({post}: Post) {
+    const [user, setUser] = useState<IUser>();
+    const [likeCount, setLikeCount] = useState<number>(post.likedBy.length);
+
+    const [isLiked, setIsLiked] = useState<boolean>(false);
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const open = Boolean(anchorEl);
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+      setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+      setAnchorEl(null);
+    };
+
+    const handleClickDelete = () => {
+        instance.delete(`/post/${post.id}`).then(() => {
+            alert('This Post was deleted!')
+            handleClose();
+        })
+        .catch((err) => {
+            console.error('Delete error!', err.message);
+        })
+    }
+
+    const handleToggleLike = () => {
+        instance.post(`/post/${post.id}/toggleLike`).then(() => {
+            if (isLiked) {
+                setLikeCount(likeCount - 1);
+            } else {
+                setLikeCount(likeCount + 1);
+            }
+            setIsLiked(!isLiked);
+        })
+        .catch((err) => {
+            console.error('Toggle like Error!', err.message);
+        })
+    }
+    
+    useEffect(() => {
+        const userExisted = localStorage.getItem('user');
+        if (userExisted) {
+            setUser(JSON.parse(userExisted));
+        }
+    }, [])
+
+    useEffect(() => {
+        const index = post.likedBy.findIndex(likedUser => likedUser.id === user?.id);
+        if (index > -1) {
+            setIsLiked(true);
+        }
+    }, [user])
     return (
         <Box
             display="flex"
@@ -82,33 +112,33 @@ export function Post({post}: Post) {
                     height={"100%"}
                     gap={2}
                     >
-                    <Avatar 
-                        alt="Remy Sharp" 
-                        src="/static/images/avatar/1.jpg"
-                        sx={{ width: 40, height: 40, border: 1, borderColor: "grey.300" }}
-                    />
+                    <Link href={`/profile/${post.user.id}`}>
+                        <Avatar 
+                            alt={post.user.fullName} 
+                            src={post.user.image}
+                            sx={{ width: 40, height: 40, border: 1, borderColor: "grey.300" }}
+                        />
+                    </Link>
                     <Box
                         display={"flex"}
                         flexDirection={"column"}
                         gap={0}
                     >
-                        <Typography
-                            fontSize={15}
-                            color="text.secondary"
-                            textTransform={"none"}
-                            // bgcolor={"grey.100"}
-                            // borderRadius={5}
-                            width={"100%"}
-                            textAlign={"left"}
-                        >
-                            {post.user.fullName}
-                        </Typography>
+                        <Link href={`/profile/${post.user.id}`}>
+                            <Typography
+                                fontSize={15}
+                                color="text.secondary"
+                                textTransform={"none"}
+                                width={"100%"}
+                                textAlign={"left"}
+                            >
+                                {post.user.fullName}
+                            </Typography>
+                        </Link>
                         <Typography
                             fontSize={10}
                             color="text.secondary"
                             textTransform={"none"}
-                            // bgcolor={"grey.100"}
-                            // borderRadius={5}
                             width={"100%"}
                             textAlign={"left"}
                         >
@@ -125,19 +155,40 @@ export function Post({post}: Post) {
                     height={"100%"}
                     gap={2}
                 >
-                    <Button
-                        sx={{
-                            borderRadius: "50%",
-                        }}
-                    >
-                        <icons.more 
-                            sx={{ 
-                                color: "text.secondary", 
-                                fontSize: 20, 
-                                cursor: "pointer", 
-                            }} 
-                        />
-                    </Button>
+                    {post.user.id === user?.id && (
+                        <>
+                            <Button
+                                id="basic-button"
+                                aria-controls={open ? 'basic-menu' : undefined}
+                                aria-haspopup="true"
+                                aria-expanded={open ? 'true' : undefined}
+                                onClick={handleClick}
+                                sx={{
+                                    borderRadius: "50%",
+                                }}
+                            >
+                                <icons.more 
+                                    sx={{ 
+                                        color: "text.secondary", 
+                                        fontSize: 20, 
+                                        cursor: "pointer", 
+                                    }} 
+                                />
+                            </Button>
+                            <Menu
+                                id="basic-menu"
+                                anchorEl={anchorEl}
+                                open={open}
+                                onClose={handleClose}
+                                MenuListProps={{
+                                'aria-labelledby': 'basic-button',
+                                }}
+                            >
+                                <MenuItem onClick={handleClose}>Update</MenuItem>
+                                <MenuItem onClick={handleClickDelete}>Delete</MenuItem>
+                            </Menu>
+                        </>
+                    )}
                 </Box>
             </Box>
             <Box
@@ -153,8 +204,6 @@ export function Post({post}: Post) {
                     fontSize={15}
                     color="text.secondary"
                     textTransform={"none"}
-                    // bgcolor={"grey.100"}
-                    // borderRadius={5}
                     width={"100%"}
                     textAlign={"left"}
                 >
@@ -169,18 +218,7 @@ export function Post({post}: Post) {
                     height={"100%"}
                     gap={2}
                 >
-                    <ImageList cols={2} rowHeight={"auto"}>
-                        {/* {itemData.map((item) => (
-                            <ImageListItem key={item.img}>
-                                <img
-                                    // srcSet={`${item.img}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-                                    // src={`${item.img}?w=164&h=164&fit=crop&auto=format`}
-                                    src={item.img}
-                                    alt={item.img}
-                                    loading="lazy"
-                                />
-                            </ImageListItem>
-                        ))} */}
+                    <ImageList cols={1} rowHeight={"auto"}>
                             <ImageListItem>
                                 <img
                                     src={post.image}
@@ -207,7 +245,7 @@ export function Post({post}: Post) {
                     textTransform={"none"}
                     sx={{ whiteSpace: "nowrap" }}
                 >
-                    1,234 Likes
+                    {likeCount} Likes
                 </Typography>
                 <Box
                     display="flex"
@@ -223,14 +261,14 @@ export function Post({post}: Post) {
                         color="text.secondary"
                         textTransform={"none"}
                     >
-                        123 Comments
+                        0 Comments
                     </Typography>
                     <Typography
                         fontSize={15}
                         color="text.secondary"
                         textTransform={"none"}
                     >
-                        12 Shares
+                        0 Shares
                     </Typography>
                 </Box>
             </Box>
@@ -245,9 +283,10 @@ export function Post({post}: Post) {
                 marginTop={1}
             >
                 <Button
-                    sx={1 ? likedButtonSx : interactButtonSx} // Xet dieu kien da like chua
+                    onClick={handleToggleLike}
+                    sx={isLiked ? likedButtonSx : interactButtonSx} // Xet dieu kien da like chua
                 >
-                    {1 ? // Xet dieu kien da like chua
+                    {isLiked ? // Xet dieu kien da like chua
                         <icons.liked 
                             sx={{ 
                                 color: colors.blue[500], 

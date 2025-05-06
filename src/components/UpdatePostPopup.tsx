@@ -5,8 +5,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { icons } from "@/untils";
 import { instance } from "@/lib/axios";
-import { useSelector } from "react-redux";
-import { RootState } from "@/lib/redux/store";
 
 const rolesSx = {
   padding: 1, 
@@ -34,9 +32,7 @@ interface NewPostPopupProps {
   onClose: () => void;
 }
 
-export function NewPostPopup({open, onClose}: NewPostPopupProps) {
-
-  const user = useSelector((state: RootState) => state.user.user);
+export function UpdatePostPopup({open, onClose}: NewPostPopupProps) {
 
   const { register, handleSubmit, formState: { errors}} = useForm<FormData>({
     resolver: yupResolver(schema),
@@ -105,7 +101,7 @@ export function NewPostPopup({open, onClose}: NewPostPopupProps) {
             textAlign={"center"}
             width={"100%"}
           >
-            Create new post
+            Update post
           </Typography>
           <Button
             onClick={onClose}
@@ -155,8 +151,8 @@ export function NewPostPopup({open, onClose}: NewPostPopupProps) {
             gap={2}
           >
             <Avatar 
-              alt={user?.fullName}
-              src={user?.image}
+              alt="Remy Sharp" 
+              src="/static/images/avatar/1.jpg"
               sx={{ width: 40, height: 40, border: 1, borderColor: "grey.300" }}
             />
             <Box>
@@ -169,7 +165,7 @@ export function NewPostPopup({open, onClose}: NewPostPopupProps) {
                 width={"100%"}
                 textAlign={"left"}
               >
-                {user?.fullName}
+                Remy Sharp
               </Typography>
               <Select 
                 {...register("access")}
@@ -206,7 +202,7 @@ export function NewPostPopup({open, onClose}: NewPostPopupProps) {
           >
             <TextField
               {...register("content")}
-              placeholder={`What are you thinking, ${user?.fullName}?`}
+              placeholder="What are you thinking, Remy?"
               multiline
               rows={4}
               style={{
@@ -249,7 +245,7 @@ export function NewPostPopup({open, onClose}: NewPostPopupProps) {
                 marginTop: 2,
               }}
             >
-              Post
+              Update
             </Button>
           </Box>
         </Box>

@@ -1,18 +1,12 @@
 'use client'
-import { IUser } from "@/interfaces/user.interfaces";
+
+import { RootState } from "@/lib/redux/store";
 import { Avatar, Box } from "@mui/material";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 export function RightSide() {
-    const [user, setUser] = useState<IUser>();
-
-    useEffect(() => {
-        const userExisted = localStorage.getItem('user');
-        if (userExisted) {
-            setUser(JSON.parse(userExisted));
-        }
-    }, [])
+    const user = useSelector((state: RootState) => state.user.user);
 
     return (
         <Box
@@ -38,10 +32,10 @@ export function RightSide() {
                 >
                     <Avatar 
                     alt="Remy Sharp" 
-                    src="/static/images/avatar/1.jpg"
+                    src={user?.image}
                     sx={{ width: 40, height: 40, border: 1, borderColor: "grey.300" }}
                     />
-                    User Name   
+                    {user?.fullName}   
                 </Link>
             </Box>
         </Box>

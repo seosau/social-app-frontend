@@ -5,5 +5,6 @@ export interface IPost {
     access: string,
     content: string,
     image: string,
-    user: IUser
+    user: IUser,
+    likedBy: [IUser]
 }

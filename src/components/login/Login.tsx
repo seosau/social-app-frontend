@@ -7,6 +7,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { instance } from '@/lib/axios';
 import { useRouter } from 'next/navigation';
+import { useDispatch } from 'react-redux';
+import { setUser } from '@/lib/redux/features/userSlice';
 
 const schema = yup.object({
     email: yup.string().email("Invalid email").required("Email is required"),
@@ -17,6 +19,8 @@ type FormData = yup.InferType<typeof schema>;
 
 export function LoginComp() {
 
+    const dispatch = useDispatch();
+
     const route = useRouter();
 
     const { register, handleSubmit, formState: { errors}} = useForm<FormData>({
@@ -26,7 +30,7 @@ export function LoginComp() {
     const onSubmit = (data: FormData) => {
         instance.post('/auth/login', data).then((res) => {
             alert("Login successfully!");
-            window.localStorage.setItem('user', JSON.stringify(res.data));
+            dispatch(setUser(res.data));
             route.push('/')
         }).catch((error) => {
             console.error('Login error: ', error.message)

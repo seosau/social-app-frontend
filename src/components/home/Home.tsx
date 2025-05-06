@@ -3,23 +3,10 @@ import { NewPostOptions, Post, LeftSide, RightSide} from "@/components";
 import { instance } from "@/lib/axios";
 import { Box } from "@mui/material";
 import { useEffect, useState } from "react";
-
-type UserType = {
-    id: string,
-    fullName: string,
-    email: string
-}
-
-type PostType = {
-    id: string,
-    access: string,
-    content: string,
-    image: string,
-    user: UserType
-}
+import { IPost } from "@/interfaces/post.interfaces";
 
 export function HomeComp() {
-    const [posts, setPosts] = useState<PostType[]>();
+    const [posts, setPosts] = useState<IPost[]>();
 
     useEffect(() => {
         instance.get('/post').then((res) => {
@@ -45,7 +32,7 @@ export function HomeComp() {
         alignItems={"center"}
         justifyContent={"center"}
         gap={2}
-        width={"100%"}
+        width={1/4}
         height={"100%"}
         padding={2}
         flex={1}
@@ -74,7 +61,7 @@ export function HomeComp() {
         alignItems={"center"}
         justifyContent={"start"}
         gap={2}
-        width={"100%"}
+        width={1/4}
         height={"100vh"}
         padding={2}
         flex={1}

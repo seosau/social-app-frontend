@@ -24,7 +24,7 @@ export function RegisterComp() {
     })
 
     const onSubmit = (data: FormData) => {
-        instance.post('/auth/register', data).then((res) => {
+        instance.post('/auth/register', data).then(() => {
             alert("Register successfully!");
             route.push('/auth/login');
         }).catch((err) => {

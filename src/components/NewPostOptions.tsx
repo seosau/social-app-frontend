@@ -3,6 +3,8 @@ import { Avatar, Box, Divider, Button } from "@mui/material";
 import { icons } from "@/untils";
 import { useState } from "react";
 import { NewPostPopup } from "./NewPostPopup";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/redux/store";
 
 
 const commonSx = {
@@ -20,6 +22,7 @@ const commonSx = {
 };
 
 export function NewPostOptions() {
+  const user = useSelector((state: RootState) => state.user.user)
   const [openPopup, setOpenPopup] = useState(false);
 
   const handleOpenPopup = () => {
@@ -55,8 +58,8 @@ export function NewPostOptions() {
         gap={2}
       >
         <Avatar 
-          alt="Remy Sharp" 
-          src="/static/images/avatar/1.jpg"
+          alt={user?.fullName}
+          src={user?.image}
           sx={{ width: 40, height: 40, border: 1, borderColor: "grey.300" }}
         />
         <Button
@@ -74,7 +77,7 @@ export function NewPostOptions() {
             justifyContent: "flex-start",
           }}
         >
-          What are you thinking, Remy?
+          What are you thinking, {user?.fullName}?
         </Button>
       </Box>
       <Divider sx={{ width: '100%'}}/>

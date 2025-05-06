@@ -1,9 +1,13 @@
+'use client'
+
 import { Box, Button, Stack, TextField, Typography } from "@mui/material";
 import { useForm } from 'react-hook-form';
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { instance } from "@/lib/axios";
 import { IUser } from "@/interfaces/user.interfaces";
+import { useDispatch } from "react-redux";
+import { setUser } from "@/lib/redux/features/userSlice";
 
 const schema = yup.object({
     fullName: yup.string().required("Full name is required"),
@@ -25,8 +29,8 @@ interface UpdateProfilePopupProps {
 
 type FormData = yup.InferType<typeof schema>;
 
-export default function UpdateProfilePopup ({user, open, onClose} : UpdateProfilePopupProps) {
-
+export function UpdateProfilePopup ({user, open, onClose} : UpdateProfilePopupProps) {
+    const dispatch = useDispatch();
     console.log(open);
     const { register, handleSubmit, formState: { errors}} = useForm<FormData>({
         resolver: yupResolver(schema),
@@ -40,6 +44,7 @@ export default function UpdateProfilePopup ({user, open, onClose} : UpdateProfil
         formData.append('image', (data.image as FileList)[0]);
         instance.patch('/user', formData).then((res) => {
             alert("Update successfully!");
+            dispatch(setUser(res.data));
             onClose();
         }).catch((err) => {
             console.error('Update error: ', err.response?.data || err.message);

@@ -5,35 +5,49 @@ import { Avatar, Box, Button, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Post } from "../Post";
 import { LeftSide } from "../LeftSide";
-import { IUser } from "@/interfaces/user.interfaces";
+import { UpdateProfilePopup } from "./UpdateProfilePopup";
 import { IPost } from "@/interfaces/post.interfaces";
-import UpdateProfilePopup from "./UpdateProfilePopup";
+import { useParams } from "next/navigation";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/redux/store";
+import { IUser } from "@/interfaces/user.interfaces";
 
 export function ProfileComp() {
     const [posts, setPosts] = useState<IPost[]>();
-    const [user, setUser] = useState<IUser>();
+    const user = useSelector((state: RootState) => state.user.user);
+    const [thisProfileUser, setThisProfileUser] = useState<IUser>();
     const [isOpen, setIsOpen] = useState<boolean>(false);
+    const params = useParams<{slug: string}>();
 
     const handleClickUpdate = () => {
         setIsOpen(!isOpen);
     }
 
     useEffect(() => {
-        const userExisted = localStorage.getItem('user');
-        if (userExisted) {
-            setUser(JSON.parse(userExisted));
-        }
-    }, [])
-
-    useEffect(() => {
         if(!user?.id) return;
-        instance.get('/post/user', { params: { userId: user?.id } }).then((res) => {
+        instance.get(`/post/user/${params.slug}`).then((res) => {
             setPosts(res.data);
         })
         .catch((err) => {
             console.error('Failed to load posts!', err.message);
         })
     },[user])
+
+    useEffect(() => {
+        if(!user?.id || !params.slug) return;
+        if(user.id !== params.slug) {
+            instance.get(`/user/${params.slug}`).then((res) => {
+                setThisProfileUser(res.data);
+            })
+            .catch((err) => {
+                console.error('Failed to load posts!', err.message);
+            })
+        }
+        else {
+            setThisProfileUser(user);
+        }
+    },[user, params])
+
     return (
         <Box
             display="flex"
@@ -44,7 +58,7 @@ export function ProfileComp() {
             width={"100%"}
             height={"100%"}
         >
-            {isOpen && user && <UpdateProfilePopup user={user} open={isOpen} onClose={handleClickUpdate} />   }
+            {isOpen && thisProfileUser && <UpdateProfilePopup user={thisProfileUser} open={isOpen} onClose={handleClickUpdate} />   }
             <Box
                 display="flex"
                 flexDirection="column"
@@ -78,21 +92,24 @@ export function ProfileComp() {
                     height={"100%"}
                     gap={2}
                 >
-                    <Button
-                        color="primary"
-                        variant="outlined"
-                        sx={{
-                            position: 'fixed',
-                            top: 20,
-                            right: 20,
-                        }}
-                        onClick={handleClickUpdate}
-                    >
-                        Update Profile
-                    </Button>
+                    {user?.id === params.slug && 
+                        <Button
+                            color="primary"
+                            variant="outlined"
+                            sx={{
+                                position: 'fixed',
+                                top: 20,
+                                right: 20,
+                            }}
+                            onClick={handleClickUpdate}
+                        >
+                            Update Profile
+                        </Button>
+                    }
+                    
                     <Avatar 
                     alt="Remy Sharp" 
-                    src={user?.image}
+                    src={thisProfileUser?.image}
                     sx={{ width: 100, height: 100, border: 1, borderColor: "grey.300" }}
                     />
                     <Box>
@@ -105,7 +122,7 @@ export function ProfileComp() {
                         width={"100%"}
                         textAlign={"left"}
                     >
-                        {user?.fullName}
+                        {thisProfileUser?.fullName}
                     </Typography>
                     </Box>
                 </Box>
