@@ -1,19 +1,23 @@
 'use client'
 
+import { clearUser } from "@/lib/redux/features/userSlice";
 import { RootState } from "@/lib/redux/store";
-import { Avatar, Box } from "@mui/material";
+import { Avatar, Box, Button } from "@mui/material";
 import Link from "next/link";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 export function RightSide() {
     const user = useSelector((state: RootState) => state.user.user);
-
+    const dispatch = useDispatch();
+    const handleLogout = () => {
+        dispatch(clearUser())
+    }
     return (
         <Box
             display="flex"
-            flexDirection="column"
-            alignItems={"center"}
-            justifyContent={"start"}
+            flexDirection="row"
+            alignItems={"start"}
+            justifyContent={"space-between"}
             // position={"fixed"}
             width={"100%"}
             height={"100vh"}
@@ -22,6 +26,7 @@ export function RightSide() {
             borderRadius={2}
             boxShadow={1}
             padding={2}
+            gap={2}
         >
             <Box
                 padding={0}
@@ -37,6 +42,20 @@ export function RightSide() {
                     />
                     {user?.fullName}   
                 </Link>
+            </Box>
+            <Box
+                padding={0}
+                width={"100%"}
+                display={'flex'}
+                justifyContent={'end'}
+            >
+                <Button
+                    variant="contained"
+                    color="error"
+                    onClick={handleLogout}
+                >
+                    Logout
+                </Button>
             </Box>
         </Box>
     )

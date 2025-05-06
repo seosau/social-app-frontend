@@ -4,17 +4,39 @@ import { instance } from "@/lib/axios";
 import { Box } from "@mui/material";
 import { useEffect, useState } from "react";
 import { IPost } from "@/interfaces/post.interfaces";
+import { useDebounce } from "@/hooks/useDebounce";
 
 export function HomeComp() {
     const [posts, setPosts] = useState<IPost[]>();
+    const [keyword, setKeyword] = useState("");
+    const debouncedSearch = useDebounce(keyword, 500);
+
+    const getPosts = () => {
+      instance.get('/post').then((res) => {
+          setPosts(res.data);
+      })
+      .catch((err) => {
+          console.error('Failed to load posts!', err.message);
+      })
+    }
 
     useEffect(() => {
-        instance.get('/post').then((res) => {
-            setPosts(res.data);
-        })
-        .catch((err) => {
-            console.error('Failed to load posts!', err.message);
-        })
+      if(debouncedSearch.trim() === "") {
+        getPosts();
+        return;
+      };
+      instance.get(`/post/search/${debouncedSearch}`)
+      .then((res) => {
+        setPosts(res.data);
+      })
+      .catch((err) => {
+        console.error('Search error: ', err.message);
+        getPosts();
+      })
+    }, [debouncedSearch])
+
+    useEffect(() => {
+      getPosts();
     },[])
   return (
     <Box
@@ -37,7 +59,7 @@ export function HomeComp() {
         padding={2}
         flex={1}
       >
-          <LeftSide />
+          <LeftSide keyword={keyword} onKeywordChange={setKeyword} />
       </Box>
       <Box
         display="flex"

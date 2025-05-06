@@ -5,6 +5,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { icons } from "@/untils";
 import { instance } from "@/lib/axios";
+import { IPost } from "@/interfaces/post.interfaces";
 
 const rolesSx = {
   padding: 1, 
@@ -15,6 +16,7 @@ const rolesSx = {
 }
 
 const schema = yup.object({
+  // id: yup.string().nullable().notRequired(),
   access: yup.string().required("Access is required"),
   content: yup.string().required("Content is required"),
   image: yup
@@ -28,28 +30,34 @@ const schema = yup.object({
 type FormData = yup.InferType<typeof schema>;
 
 interface NewPostPopupProps {
+  post: IPost,
   open: boolean;
   onClose: () => void;
 }
 
-export function UpdatePostPopup({open, onClose}: NewPostPopupProps) {
+export function UpdatePostPopup({post, open, onClose}: NewPostPopupProps) {
 
   const { register, handleSubmit, formState: { errors}} = useForm<FormData>({
     resolver: yupResolver(schema),
+    defaultValues: {
+      // id: post.id ?? undefined,
+      access: post.access,
+      content: post.content,
+      image: post.image
+    } as FormData
   })
 
   const onSubmit = (data: FormData) => {
     const formData = new FormData();
+    formData.append('id', post.id);
     formData.append('access', data.access);
     formData.append('content', data.content);
     formData.append('image', (data.image as FileList)[0]);
-    instance.post('/post', formData).then((res) => {
-      if (res.status == 201) {
-        alert('This Post was Created!')
-        onClose();
-      }
+    instance.patch('/post', formData).then((res) => {
+      alert('This Post was updated!')
+      onClose();
     }).catch((err) => {
-      console.error('Loi khi tao bai post: ', err)
+      console.error('Update post error: ', err)
     })
   }
 
@@ -202,6 +210,7 @@ export function UpdatePostPopup({open, onClose}: NewPostPopupProps) {
           >
             <TextField
               {...register("content")}
+              defaultValue={post.content}
               placeholder="What are you thinking, Remy?"
               multiline
               rows={4}

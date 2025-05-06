@@ -8,6 +8,7 @@ import { IPost } from "@/interfaces/post.interfaces";
 import { useEffect, useState } from "react";
 import { instance } from "@/lib/axios";
 import React from "react";
+import { UpdatePostPopup } from "./UpdatePostPopup";
 
 const interactButtonSx = {
     display: "flex",
@@ -36,6 +37,13 @@ export function Post({post}: Post) {
     const [isLiked, setIsLiked] = useState<boolean>(false);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
+
+    const [isOpenUpdate, setIsOpenUpdate] = useState<boolean>(false);
+    const handleClickUpdate = () => {
+        handleClose();
+        setIsOpenUpdate(!isOpenUpdate);
+    }
+
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
       setAnchorEl(event.currentTarget);
     };
@@ -95,6 +103,7 @@ export function Post({post}: Post) {
             borderRadius={2}
             boxShadow={1}
         >
+            <UpdatePostPopup post={post} open={isOpenUpdate} onClose={handleClickUpdate} />
             <Box
                 display="flex"
                 flexDirection="row"
@@ -184,7 +193,7 @@ export function Post({post}: Post) {
                                 'aria-labelledby': 'basic-button',
                                 }}
                             >
-                                <MenuItem onClick={handleClose}>Update</MenuItem>
+                                <MenuItem onClick={handleClickUpdate}>Update</MenuItem>
                                 <MenuItem onClick={handleClickDelete}>Delete</MenuItem>
                             </Menu>
                         </>

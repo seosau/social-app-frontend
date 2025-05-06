@@ -1,7 +1,14 @@
+'use client'
+
 import { Box, InputAdornment, TextField } from "@mui/material";
 import { icons } from "@/untils";
 
-export function LeftSide() {
+type LeftSideProps = {
+  keyword: string,
+  onKeywordChange: (value: string) => void
+}
+
+export function LeftSide({keyword, onKeywordChange}: LeftSideProps) {
     return (
         <Box
             display="flex"
@@ -23,6 +30,7 @@ export function LeftSide() {
                     variant="outlined"
                     size="small"
                     fullWidth
+                    onChange={(e) => onKeywordChange(e.target.value.toString())}
                     InputProps={{
                       startAdornment: (
                         <InputAdornment position="start">

@@ -11,6 +11,7 @@ import { useParams } from "next/navigation";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/redux/store";
 import { IUser } from "@/interfaces/user.interfaces";
+import { useDebounce } from "@/hooks/useDebounce";
 
 export function ProfileComp() {
     const [posts, setPosts] = useState<IPost[]>();
@@ -18,6 +19,32 @@ export function ProfileComp() {
     const [thisProfileUser, setThisProfileUser] = useState<IUser>();
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const params = useParams<{slug: string}>();
+    const [keyword, setKeyword] = useState("");
+    const debouncedSearch = useDebounce(keyword, 500);
+
+    const getPosts = () => {
+        instance.get(`/post/user/${params.slug}`).then((res) => {
+            setPosts(res.data);
+        })
+        .catch((err) => {
+            console.error('Failed to load posts!', err.message);
+        })
+    }
+
+    useEffect(() => {
+        if(debouncedSearch.trim() === "") {
+        getPosts();
+        return;
+        };
+        instance.get(`/post/search/${debouncedSearch}/${thisProfileUser?.id}`)
+        .then((res) => {
+        setPosts(res.data);
+        })
+        .catch((err) => {
+        console.error('Search error: ', err.message);
+        getPosts();
+        })
+    }, [debouncedSearch])
 
     const handleClickUpdate = () => {
         setIsOpen(!isOpen);
@@ -25,12 +52,7 @@ export function ProfileComp() {
 
     useEffect(() => {
         if(!user?.id) return;
-        instance.get(`/post/user/${params.slug}`).then((res) => {
-            setPosts(res.data);
-        })
-        .catch((err) => {
-            console.error('Failed to load posts!', err.message);
-        })
+        getPosts();
     },[user])
 
     useEffect(() => {
@@ -70,7 +92,7 @@ export function ProfileComp() {
                 padding={2}
                 flex={1}
             >
-                <LeftSide />
+                <LeftSide keyword={keyword} onKeywordChange={setKeyword}/>
             </Box>
             <Box
                 display="flex"
