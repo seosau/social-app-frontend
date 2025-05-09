@@ -7,6 +7,8 @@ import { icons } from "@/untils";
 import { instance } from "@/lib/axios";
 import { useSelector } from "react-redux";
 import { RootState } from "@/lib/redux/store";
+import { useMutation } from "@tanstack/react-query";
+import { queryClient } from "@/lib/queryClient";
 
 const rolesSx = {
   padding: 1, 
@@ -34,7 +36,44 @@ interface NewPostPopupProps {
   onClose: () => void;
 }
 
+
+const createPost = async(data: FormData) => {
+  try {
+    const formData = new FormData();
+    formData.append('access', data.access);
+    formData.append('content', data.content);
+    formData.append('image', (data.image as FileList)[0]);
+    const res = await instance.post('/post', formData);
+    alert('This post was created!');
+    return res.data;
+  } catch (err) {
+    console.error('Create post error: ', err);
+    throw err;
+  }
+}
+
 export function NewPostPopup({open, onClose}: NewPostPopupProps) {
+  const createPostMutation = useMutation({
+    mutationFn: createPost,
+    // onMutate: async (newPost) => {
+    //   await queryClient.cancelQueries({queryKey: ['allPosts']});
+    //   const prePosts = queryClient.getQueryData(['allPosts']);
+    //   queryClient.setQueryData(['allPosts'], (old) => [
+    //     {...newPost, id: 'temp-id', createdAt: new Date().toISOString()},
+    //     ...old,
+    //   ])
+    //   return {prePosts};
+    // },
+    // onError: (err, newPost, context) => {
+    //   queryClient.setQueryData(['allPosts'], context.prePosts);
+    // },
+    // onSettled: () => {
+    //   queryClient.invalidateQueries({queryKey: ['allPosts']});
+    // },
+    onSuccess: () => {
+      queryClient.invalidateQueries({queryKey: ['allPosts']});
+    }
+  })
 
   const user = useSelector((state: RootState) => state.user.user);
 
@@ -42,19 +81,24 @@ export function NewPostPopup({open, onClose}: NewPostPopupProps) {
     resolver: yupResolver(schema),
   })
 
+  // const onSubmit = (data: FormData) => {
+  //   const formData = new FormData();
+  //   formData.append('access', data.access);
+  //   formData.append('content', data.content);
+  //   formData.append('image', (data.image as FileList)[0]);
+  //   instance.post('/post', formData).then((res) => {
+  //     if (res.status == 201) {
+  //       alert('This Post was Created!')
+  //       onClose();
+  //     }
+  //   }).catch((err) => {
+  //     console.error('Loi khi tao bai post: ', err)
+  //   })
+  // }
+
   const onSubmit = (data: FormData) => {
-    const formData = new FormData();
-    formData.append('access', data.access);
-    formData.append('content', data.content);
-    formData.append('image', (data.image as FileList)[0]);
-    instance.post('/post', formData).then((res) => {
-      if (res.status == 201) {
-        alert('This Post was Created!')
-        onClose();
-      }
-    }).catch((err) => {
-      console.error('Loi khi tao bai post: ', err)
-    })
+    createPostMutation.mutate(data);
+    onClose();
   }
 
   if (!open) return null; 

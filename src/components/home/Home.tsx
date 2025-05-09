@@ -2,42 +2,40 @@
 import { NewPostOptions, Post, LeftSide, RightSide} from "@/components";
 import { instance } from "@/lib/axios";
 import { Box } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { IPost } from "@/interfaces/post.interfaces";
 import { useDebounce } from "@/hooks/useDebounce";
+import { useQuery } from "@tanstack/react-query";
+
+
+const getPosts = async (keyword: string = "") => {
+  try{
+    const url = keyword.trim() ? `/post/search/${keyword}` : '/post';
+    const res = await instance.get(url);
+    return res.data;
+  } catch(err) {
+      console.error('Failed to load posts!', err);
+      throw err; //Nem loi de react query xu li
+  }
+}
 
 export function HomeComp() {
-    const [posts, setPosts] = useState<IPost[]>();
     const [keyword, setKeyword] = useState("");
     const debouncedSearch = useDebounce(keyword, 500);
+    const { data, isLoading, error} = useQuery({
+      queryKey: ['allPosts', debouncedSearch],
+      queryFn: () => getPosts(debouncedSearch),
+      retry: 3,
+      staleTime: 5*60*1000,
+      gcTime: 10*60*1000,
+      refetchInterval: 30*1000,
+      refetchOnWindowFocus: true,
+      refetchOnReconnect: true,
+      refetchOnMount: true
+    })
 
-    const getPosts = () => {
-      instance.get('/post').then((res) => {
-          setPosts(res.data);
-      })
-      .catch((err) => {
-          console.error('Failed to load posts!', err.message);
-      })
-    }
-
-    useEffect(() => {
-      if(debouncedSearch.trim() === "") {
-        getPosts();
-        return;
-      };
-      instance.get(`/post/search/${debouncedSearch}`)
-      .then((res) => {
-        setPosts(res.data);
-      })
-      .catch((err) => {
-        console.error('Search error: ', err.message);
-        getPosts();
-      })
-    }, [debouncedSearch])
-
-    useEffect(() => {
-      getPosts();
-    },[])
+  if(isLoading) return <div>Loading...</div>
+  if(error) return <div>Error: Loading failed!!!</div>
   return (
     <Box
       display="flex"
@@ -59,7 +57,7 @@ export function HomeComp() {
         padding={2}
         flex={1}
       >
-          <LeftSide keyword={keyword} onKeywordChange={setKeyword} />
+          <LeftSide onKeywordChange={setKeyword} />
       </Box>
       <Box
         display="flex"
@@ -73,7 +71,7 @@ export function HomeComp() {
         flex={2}
       >
           <NewPostOptions />
-          {posts && posts.map((post) => (
+          {data && data.map((post: IPost) => (
             <Post post={post} key={post.id}/>
           ))}
       </Box>

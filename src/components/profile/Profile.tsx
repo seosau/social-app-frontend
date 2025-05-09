@@ -92,7 +92,7 @@ export function ProfileComp() {
                 padding={2}
                 flex={1}
             >
-                <LeftSide keyword={keyword} onKeywordChange={setKeyword}/>
+                <LeftSide onKeywordChange={setKeyword}/>
             </Box>
             <Box
                 display="flex"

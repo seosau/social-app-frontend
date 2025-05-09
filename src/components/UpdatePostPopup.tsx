@@ -6,6 +6,8 @@ import * as yup from "yup";
 import { icons } from "@/untils";
 import { instance } from "@/lib/axios";
 import { IPost } from "@/interfaces/post.interfaces";
+import { useMutation } from "@tanstack/react-query";
+import { queryClient } from "@/lib/queryClient";
 
 const rolesSx = {
   padding: 1, 
@@ -35,12 +37,39 @@ interface NewPostPopupProps {
   onClose: () => void;
 }
 
+type UpdatePostType = {
+  postId: string,
+  data: FormData
+}
+
+const updatePost = async({postId, data}: UpdatePostType) => {
+  try {
+    const formData = new FormData();
+    formData.append('id', postId);
+    formData.append('access', data.access);
+    formData.append('content', data.content);
+    formData.append('image', (data.image as FileList)[0]);
+    const res = await instance.patch('/post', formData)
+    alert('This Post was updated!')
+    return res.data;
+  } catch(err) {
+    console.error('Update post error: ', err)
+    throw err;
+  }
+}
+
 export function UpdatePostPopup({post, open, onClose}: NewPostPopupProps) {
+  const updatePostMutation = useMutation({
+    mutationFn: updatePost,
+    onSuccess: () => {
+      queryClient.invalidateQueries({queryKey: ['allPosts']});
+    }
+  })
 
   const { register, handleSubmit, formState: { errors}} = useForm<FormData>({
     resolver: yupResolver(schema),
     defaultValues: {
-      // id: post.id ?? undefined,
+      id: post.id ?? undefined,
       access: post.access,
       content: post.content,
       image: post.image
@@ -48,17 +77,8 @@ export function UpdatePostPopup({post, open, onClose}: NewPostPopupProps) {
   })
 
   const onSubmit = (data: FormData) => {
-    const formData = new FormData();
-    formData.append('id', post.id);
-    formData.append('access', data.access);
-    formData.append('content', data.content);
-    formData.append('image', (data.image as FileList)[0]);
-    instance.patch('/post', formData).then((res) => {
-      alert('This Post was updated!')
-      onClose();
-    }).catch((err) => {
-      console.error('Update post error: ', err)
-    })
+    updatePostMutation.mutate({postId: post.id, data: data});
+    onClose();
   }
 
   if (!open) return null; 

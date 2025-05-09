@@ -4,11 +4,10 @@ import { Box, InputAdornment, TextField } from "@mui/material";
 import { icons } from "@/untils";
 
 type LeftSideProps = {
-  keyword: string,
   onKeywordChange: (value: string) => void
 }
 
-export function LeftSide({keyword, onKeywordChange}: LeftSideProps) {
+export function LeftSide({onKeywordChange}: LeftSideProps) {
     return (
         <Box
             display="flex"
