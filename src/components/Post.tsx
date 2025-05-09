@@ -9,6 +9,8 @@ import { useEffect, useState } from "react";
 import { instance } from "@/lib/axios";
 import React from "react";
 import { UpdatePostPopup } from "./UpdatePostPopup";
+import { useMutation } from "@tanstack/react-query";
+import { queryClient } from "@/lib/queryClient";
 
 const interactButtonSx = {
     display: "flex",
@@ -30,6 +32,16 @@ type Post = {
     post: IPost
 }
 
+const deletePost = async (postId: string) => {
+    try {
+        const res = await instance.delete(`/post/${postId}`);
+        alert('This post was deleted!');
+        return res.data;
+    } catch (err) {
+        console.error('Delete error!', err)
+    }
+}
+
 export function Post({post}: Post) {
     const [user, setUser] = useState<IUser>();
     const [likeCount, setLikeCount] = useState<number>(post.likedBy.length);
@@ -37,6 +49,13 @@ export function Post({post}: Post) {
     const [isLiked, setIsLiked] = useState<boolean>(false);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
+
+    const deleteMutation = useMutation({
+        mutationFn: deletePost,
+        onSuccess: () => {
+            queryClient.invalidateQueries({queryKey: ['allPosts']});
+        }
+    })
 
     const [isOpenUpdate, setIsOpenUpdate] = useState<boolean>(false);
     const handleClickUpdate = () => {
@@ -52,13 +71,12 @@ export function Post({post}: Post) {
     };
 
     const handleClickDelete = () => {
-        instance.delete(`/post/${post.id}`).then(() => {
-            alert('This Post was deleted!')
+        try{
+            deleteMutation.mutate(post.id);
             handleClose();
-        })
-        .catch((err) => {
-            console.error('Delete error!', err.message);
-        })
+        } catch (err) {
+            console.error('Delete error!', err)
+        }
     }
 
     const handleToggleLike = () => {

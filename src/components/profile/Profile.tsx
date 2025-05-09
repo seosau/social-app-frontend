@@ -12,52 +12,72 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/lib/redux/store";
 import { IUser } from "@/interfaces/user.interfaces";
 import { useDebounce } from "@/hooks/useDebounce";
+import { useQuery } from "@tanstack/react-query";
+import { queryClient } from "@/lib/queryClient";
+
+type getPostsType = {
+    keyword: string, 
+    slug: string
+}
+
+const getPosts = async({keyword, slug} : getPostsType) => {
+    try {
+        const url = keyword.trim()? `/post/search/${keyword}/${slug}` : `/post/user/${slug}`;
+        const res = await instance.get(url)
+        return res.data;
+    } catch (err) {
+        console.error('Failed to load posts!', err);
+        throw err;
+    }
+}
 
 export function ProfileComp() {
-    const [posts, setPosts] = useState<IPost[]>();
+    // const [posts, setPosts] = useState<IPost[]>();
     const user = useSelector((state: RootState) => state.user.user);
     const [thisProfileUser, setThisProfileUser] = useState<IUser>();
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const params = useParams<{slug: string}>();
     const [keyword, setKeyword] = useState("");
     const debouncedSearch = useDebounce(keyword, 500);
-
-    const getPosts = () => {
-        instance.get(`/post/user/${params.slug}`).then((res) => {
-            setPosts(res.data);
-        })
-        .catch((err) => {
-            console.error('Failed to load posts!', err.message);
-        })
-    }
-
-    useEffect(() => {
-        if(debouncedSearch.trim() === "") {
-        getPosts();
-        return;
-        };
-        instance.get(`/post/search/${debouncedSearch}/${thisProfileUser?.id}`)
-        .then((res) => {
-        setPosts(res.data);
-        })
-        .catch((err) => {
-        console.error('Search error: ', err.message);
-        getPosts();
-        })
-    }, [debouncedSearch])
+    const {data, isLoading, error} = useQuery({
+        queryKey: ['userPosts', debouncedSearch, thisProfileUser],
+        queryFn: () => getPosts({keyword: debouncedSearch, slug: params.slug}),
+        retry: 3,
+        staleTime: 5*60*1000,
+        gcTime: 10*60*1000,
+        refetchInterval: 30*1000,
+        refetchOnWindowFocus: true,
+        refetchOnReconnect: true,
+        refetchOnMount: true
+    })
+    // useEffect(() => {
+    //     if(debouncedSearch.trim() === "") {
+    //     getPosts();
+    //     return;
+    //     };
+    //     instance.get(`/post/search/${debouncedSearch}/${thisProfileUser?.id}`)
+    //     .then((res) => {
+    //     setPosts(res.data);
+    //     })
+    //     .catch((err) => {
+    //     console.error('Search error: ', err.message);
+    //     getPosts();
+    //     })
+    // }, [debouncedSearch])
 
     const handleClickUpdate = () => {
         setIsOpen(!isOpen);
     }
 
-    useEffect(() => {
-        if(!user?.id) return;
-        getPosts();
-    },[user])
+    // useEffect(() => {
+    //     if(!user?.id) return;
+    //     getPosts();
+    // },[user])
 
     useEffect(() => {
         if(!user?.id || !params.slug) return;
         if(user.id !== params.slug) {
+            queryClient.invalidateQueries({queryKey: ['userPosts']})
             instance.get(`/user/${params.slug}`).then((res) => {
                 setThisProfileUser(res.data);
             })
@@ -66,10 +86,13 @@ export function ProfileComp() {
             })
         }
         else {
+            queryClient.invalidateQueries({queryKey: ['userPosts']})
             setThisProfileUser(user);
         }
     },[user, params])
 
+    if(isLoading) return <div>Loading...</div>
+    if(error) return <div>Error: Loading failed!!!</div>
     return (
         <Box
             display="flex"
@@ -148,7 +171,7 @@ export function ProfileComp() {
                     </Typography>
                     </Box>
                 </Box>
-                {posts && posts.map((post) => (
+                {data && data.map((post: IPost) => (
                     <Post post={post} key={post.id}/>
                 ))}
             </Box>
