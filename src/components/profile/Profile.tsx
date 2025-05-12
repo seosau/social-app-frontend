@@ -91,8 +91,8 @@ export function ProfileComp() {
         }
     },[user, params])
 
-    if(isLoading) return <div>Loading...</div>
-    if(error) return <div>Error: Loading failed!!!</div>
+    // if(isLoading) return <div>Loading...</div>
+    // if(error) return <div>Error: Loading failed!!!</div>
     return (
         <Box
             display="flex"
@@ -115,7 +115,7 @@ export function ProfileComp() {
                 padding={2}
                 flex={1}
             >
-                <LeftSide onKeywordChange={setKeyword}/>
+                <LeftSide keyword={keyword} onKeywordChange={setKeyword}/>
             </Box>
             <Box
                 display="flex"
@@ -171,6 +171,8 @@ export function ProfileComp() {
                     </Typography>
                     </Box>
                 </Box>
+                {isLoading && <div>Loading...</div>}
+                {error && <div>Error: Loading failed!!!</div>}
                 {data && data.map((post: IPost) => (
                     <Post post={post} key={post.id}/>
                 ))}

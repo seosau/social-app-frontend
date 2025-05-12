@@ -6,11 +6,11 @@ import Link from "next/link";
 import { IUser } from "@/interfaces/user.interfaces";
 import { IPost } from "@/interfaces/post.interfaces";
 import { useEffect, useState } from "react";
-import { instance } from "@/lib/axios";
 import React from "react";
 import { UpdatePostPopup } from "./UpdatePostPopup";
 import { useMutation } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
+import { postApi } from "@/apis/post.api";
 
 const interactButtonSx = {
     display: "flex",
@@ -34,7 +34,7 @@ type Post = {
 
 const deletePost = async (postId: string) => {
     try {
-        const res = await instance.delete(`/post/${postId}`);
+        const res = await postApi.delete(postId);
         alert('This post was deleted!');
         return res.data;
     } catch (err) {
@@ -80,7 +80,7 @@ export function Post({post}: Post) {
     }
 
     const handleToggleLike = () => {
-        instance.post(`/post/${post.id}/toggleLike`).then(() => {
+        postApi.toggleLike(post.id).then(() => {
             if (isLiked) {
                 setLikeCount(likeCount - 1);
             } else {

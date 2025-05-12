@@ -1,17 +1,16 @@
 'use client'
 import { NewPostOptions, Post, LeftSide, RightSide} from "@/components";
-import { instance } from "@/lib/axios";
 import { Box } from "@mui/material";
 import { useState } from "react";
 import { IPost } from "@/interfaces/post.interfaces";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useQuery } from "@tanstack/react-query";
+import { postApi } from "@/apis/post.api";
 
 
 const getPosts = async (keyword: string = "") => {
   try{
-    const url = keyword.trim() ? `/post/search/${keyword}` : '/post';
-    const res = await instance.get(url);
+    const res = await postApi.getAll(keyword);
     return res.data;
   } catch(err) {
       console.error('Failed to load posts!', err);
@@ -34,8 +33,8 @@ export function HomeComp() {
       refetchOnMount: true
     })
 
-  if(isLoading) return <div>Loading...</div>
-  if(error) return <div>Error: Loading failed!!!</div>
+  // if(isLoading) return <div>Loading...</div>
+  // if(error) return <div>Error: Loading failed!!!</div>
   return (
     <Box
       display="flex"
@@ -57,7 +56,7 @@ export function HomeComp() {
         padding={2}
         flex={1}
       >
-          <LeftSide onKeywordChange={setKeyword} />
+          <LeftSide keyword={keyword} onKeywordChange={setKeyword} />
       </Box>
       <Box
         display="flex"
@@ -71,6 +70,8 @@ export function HomeComp() {
         flex={2}
       >
           <NewPostOptions />
+          {isLoading && <div>Loading...</div>}
+          {error && <div>Error: Loading failed!!!</div>}
           {data && data.map((post: IPost) => (
             <Post post={post} key={post.id}/>
           ))}

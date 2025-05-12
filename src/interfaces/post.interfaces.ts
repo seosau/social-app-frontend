@@ -8,3 +8,9 @@ export interface IPost {
     user: IUser,
     likedBy: [IUser]
 }
+
+export interface IPostFormData {
+    access: string,
+    content: string,
+    image: File | null,
+}
