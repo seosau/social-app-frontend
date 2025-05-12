@@ -6,20 +6,6 @@ export const instance = axios.create({
   withCredentials: true, 
 });
 
-instance.interceptors.request.use(
-  function (config) {
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-
-    if(user) {
-      config.headers.Authorization = user.id;
-    }
-    return config;
-  },
-  function (error) {
-    return Promise.reject(error);
-  }
-);
-
 // Response Interceptor
 instance.interceptors.response.use(
   function (response) {

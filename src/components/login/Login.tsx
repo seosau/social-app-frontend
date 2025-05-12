@@ -30,7 +30,7 @@ export function LoginComp() {
     const onSubmit = (data: FormData) => {
         instance.post('/auth/login', data).then((res) => {
             alert("Login successfully!");
-            dispatch(setUser(res.data));
+            dispatch(setUser(res.data.user));
             route.push('/')
         }).catch((error) => {
             console.error('Login error: ', error.message)
