@@ -15,13 +15,17 @@ export function LeftSide({keyword, onKeywordChange}: LeftSideProps) {
             flexDirection="column"
             alignItems={"center"}
             justifyContent={"start"}
-            // position={"fixed"}
-            width={"100%"}
+            position={"fixed"}
+            left={0}
+            top={0}
+            // right={0}
+            bottom={0}
+            // width={"100%"}
             height={"100vh"}
-            // border={1}
-            // borderColor={"grey.300"}
-            // borderRadius={2}
-            // boxShadow={1}
+            border={1}
+            borderColor={"grey.300"}
+            borderRadius={2}
+            boxShadow={1}
             padding={2}
         >
             <Box>
