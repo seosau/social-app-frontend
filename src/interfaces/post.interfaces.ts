@@ -6,7 +6,8 @@ export interface IPost {
     content: string,
     image: string,
     user: IUser,
-    likedBy: [IUser]
+    likedBy: [IUser],
+    likeCount: number
 }
 
 export interface IPostFormData {

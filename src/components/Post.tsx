@@ -44,7 +44,7 @@ const deletePost = async (postId: string) => {
 
 export function Post({post}: Post) {
     const [user, setUser] = useState<IUser>();
-    const [likeCount, setLikeCount] = useState<number>(post.likedBy.length);
+    const [likeCount, setLikeCount] = useState<number>(post.likeCount?? 0);
 
     const [isLiked, setIsLiked] = useState<boolean>(false);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
