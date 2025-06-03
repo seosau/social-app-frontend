@@ -80,16 +80,26 @@ export function Post({post}: Post) {
     }
 
     const handleToggleLike = () => {
+        const preLikeStatus = isLiked
+        const preCount = likeCount
+        if (isLiked) {
+            setLikeCount(likeCount - 1);
+        } else {
+            setLikeCount(likeCount + 1);
+        }
+        setIsLiked(!isLiked);
         postApi.toggleLike(post.id).then(() => {
-            if (isLiked) {
-                setLikeCount(likeCount - 1);
-            } else {
-                setLikeCount(likeCount + 1);
-            }
-            setIsLiked(!isLiked);
+            // if (isLiked) {
+            //     setLikeCount(likeCount - 1);
+            // } else {
+            //     setLikeCount(likeCount + 1);
+            // }
+            // setIsLiked(!isLiked);
         })
         .catch((err) => {
             console.error('Toggle like Error!', err.message);
+            setLikeCount(preCount)
+            setIsLiked(preLikeStatus);
         })
     }
     
