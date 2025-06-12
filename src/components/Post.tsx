@@ -1,6 +1,6 @@
 'use client'
 
-import { Avatar, Box, Button, Typography, ImageList, ImageListItem, Divider, colors, Menu, MenuItem } from "@mui/material";
+import { Avatar, Box, Button, Typography, ImageList, ImageListItem, Divider, colors, Menu, MenuItem, TextField } from "@mui/material";
 import { icons } from "@/untils";
 import Link from "next/link";
 import { IUser } from "@/interfaces/user.interfaces";
@@ -8,9 +8,16 @@ import { IPost } from "@/interfaces/post.interfaces";
 import { useEffect, useState } from "react";
 import React from "react";
 import { UpdatePostPopup } from "./UpdatePostPopup";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
 import { postApi } from "@/apis/post.api";
+import { CommentList } from "./comment/Comment";
+import { grey } from "@mui/material/colors";
+import { ICommentCreateFormData, ICommentListExtra } from "@/interfaces/comment.interfaces";
+import * as yup from "yup";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+
 
 const interactButtonSx = {
     display: "flex",
@@ -32,6 +39,26 @@ type Post = {
     post: IPost
 }
 
+const schema = yup.object({
+    postId: yup.string().required("PostId is required"),
+    // userId: yup.string().required("UserId is required"),
+    content: yup.string().required("Content is required"),
+    parentId: yup.string().required().nullable(),
+})
+
+type FormData = yup.InferType<typeof schema>
+
+
+const createComment = async (data: FormData) => {
+    try {
+        const res = await postApi.createComment(data as ICommentCreateFormData)
+        alert('Reply successfully!')
+    } catch (err) {
+        console.error('Reply error: ', err)
+        throw err
+    }
+}
+
 const deletePost = async (postId: string) => {
     try {
         const res = await postApi.delete(postId);
@@ -42,20 +69,68 @@ const deletePost = async (postId: string) => {
     }
 }
 
-export function Post({post}: Post) {
+const getComments = async (postId: string) => {
+    try {
+        const res = await postApi.getComments(postId);
+        return res.parentWithChilds;
+    } catch (err) {
+        console.error('Get comment error!', err)
+    }
+}
+
+export function Post({ post }: Post) {
     const [user, setUser] = useState<IUser>();
-    const [likeCount, setLikeCount] = useState<number>(post.likeCount?? 0);
+    const [likeCount, setLikeCount] = useState<number>(post.likeCount ?? 0);
 
     const [isLiked, setIsLiked] = useState<boolean>(false);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
+    const [visibleComment, setVisibleComment] = useState<boolean>(false)
+    const [visibleCommentInput, setVisibleCommentInput] = useState<boolean>(false)
+    const [comments, setComments] = useState<ICommentListExtra[]>()
 
+    const { data, isLoading, isError } = useQuery({
+        queryKey: [`allComments:${post.id}`],
+        queryFn: () => getComments(post.id),
+        retry: 3,
+        staleTime: 5 * 60 * 1000,
+        gcTime: 10 * 60 * 1000,
+        refetchInterval: 30 * 1000,
+        refetchOnWindowFocus: true,
+        refetchOnReconnect: true,
+        refetchOnMount: true
+    })
+
+    useEffect(() => {
+        setComments(data)
+    }, [data])
+    
     const deleteMutation = useMutation({
         mutationFn: deletePost,
         onSuccess: () => {
-            queryClient.invalidateQueries({queryKey: ['allPosts']});
+            queryClient.invalidateQueries({ queryKey: ['allPosts'] });
         }
     })
+
+    const createCommentMutation = useMutation({
+        mutationFn: createComment,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: [`allComments:${post.id}`] })
+        }
+    })
+
+    const { control, register, handleSubmit } = useForm({
+        resolver: yupResolver(schema),
+        defaultValues: {
+            postId: post.id,
+            content: '',
+            parentId: null,
+        }
+    })
+
+    const onSubmit = (data: FormData) => {
+        createCommentMutation.mutate(data);
+    }
 
     const [isOpenUpdate, setIsOpenUpdate] = useState<boolean>(false);
     const handleClickUpdate = () => {
@@ -64,14 +139,14 @@ export function Post({post}: Post) {
     }
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-      setAnchorEl(event.currentTarget);
+        setAnchorEl(event.currentTarget);
     };
     const handleClose = () => {
-      setAnchorEl(null);
+        setAnchorEl(null);
     };
 
     const handleClickDelete = () => {
-        try{
+        try {
             deleteMutation.mutate(post.id);
             handleClose();
         } catch (err) {
@@ -96,19 +171,41 @@ export function Post({post}: Post) {
             // }
             // setIsLiked(!isLiked);
         })
-        .catch((err) => {
-            console.error('Toggle like Error!', err.message);
-            setLikeCount(preCount)
-            setIsLiked(preLikeStatus);
-        })
+            .catch((err) => {
+                console.error('Toggle like Error!', err.message);
+                setLikeCount(preCount)
+                setIsLiked(preLikeStatus);
+            })
     }
-    
+
+    const handleClickComment = async (postId: string) => {
+        try {
+            setVisibleCommentInput(!visibleCommentInput)
+            if (!comments) {
+                // const res = await postApi.getComments(postId)
+                // const commentList = res.parentWithChilds
+
+                // console.log(commentList)
+                // setComments(commentList)
+            } else {
+                setVisibleComment(!visibleComment)
+            }
+        } catch (err) {
+            console.error(err)
+        }
+    }
+
     useEffect(() => {
         const userExisted = localStorage.getItem('user');
         if (userExisted) {
             setUser(JSON.parse(userExisted));
         }
     }, [])
+
+    // useEffect(() => {
+    //     // setVisibleCommentInput(true)
+    //     setVisibleComment(true)
+    // }, [comments])
 
     useEffect(() => {
         const index = post.likedBy.findIndex(likedUser => likedUser.id === user?.id);
@@ -148,10 +245,10 @@ export function Post({post}: Post) {
                     width={"100%"}
                     height={"100%"}
                     gap={2}
-                    >
+                >
                     <Link href={`/profile/${post.user.id}`}>
-                        <Avatar 
-                            alt={post.user.fullName} 
+                        <Avatar
+                            alt={post.user.fullName}
                             src={post.user.image}
                             sx={{ width: 40, height: 40, border: 1, borderColor: "grey.300" }}
                         />
@@ -204,12 +301,12 @@ export function Post({post}: Post) {
                                     borderRadius: "50%",
                                 }}
                             >
-                                <icons.more 
-                                    sx={{ 
-                                        color: "text.secondary", 
-                                        fontSize: 20, 
-                                        cursor: "pointer", 
-                                    }} 
+                                <icons.more
+                                    sx={{
+                                        color: "text.secondary",
+                                        fontSize: 20,
+                                        cursor: "pointer",
+                                    }}
                                 />
                             </Button>
                             <Menu
@@ -218,7 +315,7 @@ export function Post({post}: Post) {
                                 open={open}
                                 onClose={handleClose}
                                 MenuListProps={{
-                                'aria-labelledby': 'basic-button',
+                                    'aria-labelledby': 'basic-button',
                                 }}
                             >
                                 <MenuItem onClick={handleClickUpdate}>Update</MenuItem>
@@ -256,13 +353,13 @@ export function Post({post}: Post) {
                     gap={2}
                 >
                     <ImageList cols={1} rowHeight={"auto"}>
-                            <ImageListItem>
-                                <img
-                                    src={post.image}
-                                    alt={post.content}
-                                    loading="lazy"
-                                />
-                            </ImageListItem>
+                        <ImageListItem>
+                            <img
+                                src={post.image}
+                                alt={post.content}
+                                loading="lazy"
+                            />
+                        </ImageListItem>
                     </ImageList>
                 </Box>
             </Box>
@@ -298,7 +395,7 @@ export function Post({post}: Post) {
                         color="text.secondary"
                         textTransform={"none"}
                     >
-                        0 Comments
+                        {post.commentCount} Comments
                     </Typography>
                     <Typography
                         fontSize={15}
@@ -309,7 +406,7 @@ export function Post({post}: Post) {
                     </Typography>
                 </Box>
             </Box>
-            <Divider sx={{ width: '100%', padding: 0, margin: 0}}/>
+            <Divider sx={{ width: '100%', padding: 0, margin: 0 }} />
             <Box
                 display="flex"
                 flexDirection="row"
@@ -324,47 +421,99 @@ export function Post({post}: Post) {
                     sx={isLiked ? likedButtonSx : interactButtonSx} // Xet dieu kien da like chua
                 >
                     {isLiked ? // Xet dieu kien da like chua
-                        <icons.liked 
-                            sx={{ 
-                                color: colors.blue[500], 
-                                fontSize: 20, 
-                                cursor: "pointer", 
-                            }} 
-                        /> 
-                        : 
-                        <icons.like 
-                            sx={{ 
-                                color: "text.secondary", 
-                                fontSize: 20, 
-                                cursor: "pointer", 
-                            }} 
+                        <icons.liked
+                            sx={{
+                                color: colors.blue[500],
+                                fontSize: 20,
+                                cursor: "pointer",
+                            }}
+                        />
+                        :
+                        <icons.like
+                            sx={{
+                                color: "text.secondary",
+                                fontSize: 20,
+                                cursor: "pointer",
+                            }}
                         />
                     }
                     Like
                 </Button>
                 <Button
+                    onClick={() => {
+                        handleClickComment(post.id)
+                    }}
                     sx={interactButtonSx}
                 >
-                    <icons.comment 
-                        sx={{ 
-                            color: "text.secondary", 
-                            fontSize: 20, 
-                            cursor: "pointer", 
-                        }} 
+                    <icons.comment
+                        sx={{
+                            color: "text.secondary",
+                            fontSize: 20,
+                            cursor: "pointer",
+                        }}
                     />
                     Comment
                 </Button>
                 <Button
                     sx={interactButtonSx}
                 >
-                    <icons.share 
-                        sx={{ 
-                            color: "text.secondary", 
-                            fontSize: 20, 
-                            cursor: "pointer", 
-                        }} 
+                    <icons.share
+                        sx={{
+                            color: "text.secondary",
+                            fontSize: 20,
+                            cursor: "pointer",
+                        }}
                     />
                     Share
+                </Button>
+            </Box>
+            {comments &&
+                <Box
+                    display={visibleComment ? "flex" : "none"}
+                    flexDirection="row"
+                    alignItems={"center"}
+                    justifyContent={"space-between"}
+                    width={"100%"}
+                    height={"auto"}
+                    // marginTop={1}
+                >
+                    <CommentList comments={comments} />
+                </Box>
+            }
+            <Box
+                display={visibleCommentInput ? "flex" : "none"}
+                flexDirection={"row"}
+                alignItems={"center"}
+                justifyContent={"space-between"}
+                width={"100%"}
+            >
+                <TextField
+                    {...register('content')}
+                    type="text"
+                    placeholder="Type a message..."
+                    sx={{
+                        flex: 5,
+                        // paddingY: 0
+                    }}
+                    name="content"
+                    id="content"
+                />
+                <Button
+                    variant="contained"
+                    size="medium"
+                    color="primary"
+                    onClick={handleSubmit(onSubmit)}
+                    type="submit"
+                    sx={{
+                        flex: 1,
+                        // paddingY: 0,
+                        marginLeft: 1,
+                        textTransform: "none",
+                        width: '100%',
+                        height: "100%"
+                    }}
+                >
+                    Send
                 </Button>
             </Box>
         </Box>

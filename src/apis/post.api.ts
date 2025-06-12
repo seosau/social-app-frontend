@@ -1,3 +1,4 @@
+import { ICommentCreateFormData, ICommentListExtra, IGetCommentRes } from "@/interfaces/comment.interfaces";
 import { instance } from "@/lib/axios";
 
 export const postApi = {
@@ -10,5 +11,11 @@ export const postApi = {
     },
     toggleLike: async(postId: string) => {
         return instance.post(`/post/${postId}/toggleLike`);
+    },
+    getComments: async(postId: string): Promise<IGetCommentRes> => {
+        return (await instance.get(`/post/comments/${postId}`)).data
+    },
+    createComment: async(data: ICommentCreateFormData): Promise<ICommentListExtra []> => {
+        return (await instance.post(`/post/comment`, data)).data
     }
 }

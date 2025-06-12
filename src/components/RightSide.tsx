@@ -63,20 +63,40 @@ export function RightSide() {
                         {user?.fullName}   
                     </Link>
                 </Box>
-                <Box
-                    padding={0}
-                    width={"100%"}
-                    display={'flex'}
-                    justifyContent={'end'}
-                >
-                    <Button
-                        variant="contained"
-                        color="error"
-                        onClick={handleLogout}
+                {user?.id ? (
+                    <Box
+                        padding={0}
+                        width={"100%"}
+                        display={'flex'}
+                        justifyContent={'end'}
                     >
-                        Logout
-                    </Button>
-                </Box>
+                        <Button
+                            variant="contained"
+                            color="error"
+                            onClick={handleLogout}
+                        >
+                            Logout
+                        </Button>
+                    </Box>                    
+                ): (
+                    <Box
+                        padding={0}
+                        width={"100%"}
+                        display={'flex'}
+                        justifyContent={'end'}
+                    >
+                        <Link
+                            href={'/auth/login'}
+                        >
+                            <Button
+                                variant="contained"
+                                color="primary"
+                            >
+                                Login
+                            </Button>
+                        </Link>
+                    </Box> 
+                )}
             </Box>    
             <Box
                 // position={"fixed"}
