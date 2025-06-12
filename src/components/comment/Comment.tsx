@@ -9,6 +9,7 @@ import * as yup from "yup";
 import { postApi } from "@/apis/post.api";
 import { useMutation } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
+import { formatTimeAgo } from "@/untils";
 
 const interactButtonSx = {
   display: "flex",
@@ -67,25 +68,6 @@ export function Comment({ comment, onReplyClick, isChild = false }: {
 
   const onSubmit = (data: FormData) => {
     createCommentMutation.mutate(data);
-  }
-  function formatTimeAgo(dateString: string) {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diff = (now.getTime() - date.getTime()) / 1000 - 25200; // tính bằng giây
-
-    if (diff < 60) {
-      return `${Math.floor(diff)} seconds ago`;
-    } else if (diff < 3600) {
-      return `${Math.floor(diff / 60)} minutes ago`;
-    } else if (diff < 86400) {
-      return `${Math.floor(diff / 3600)} hours ago`;
-    } else {
-      return date.toLocaleDateString("en-US", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      });
-    }
   }
 
   return (

@@ -66,7 +66,6 @@ export function HomeComp() {
         gap={2}
         width={"100%"}
         height={"100%"}
-        padding={2}
         flex={2}
       >
           <NewPostOptions />

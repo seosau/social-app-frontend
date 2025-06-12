@@ -467,6 +467,8 @@ export function Post({ post }: Post) {
                     Share
                 </Button>
             </Box>
+          {isLoading && <div>Loading...</div>}
+          {isError && <div>Error: Loading failed!!!</div>}
             {comments &&
                 <Box
                     display={visibleComment ? "flex" : "none"}

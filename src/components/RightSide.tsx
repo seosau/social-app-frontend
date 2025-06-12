@@ -24,8 +24,8 @@ export function RightSide() {
             // left={0}
             right={0}
             top={0}
-            // width={"100%"}
-            // height={"100vh"}
+            width={"25vw"}
+            height={"100vh"}
             border={1}
             borderColor={"grey.300"}
             borderRadius={2}
