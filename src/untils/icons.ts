@@ -12,6 +12,9 @@ import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import ShareIcon from '@mui/icons-material/Share';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import CancelPresentationOutlinedIcon from '@mui/icons-material/CancelPresentationOutlined';
+import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
+import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 
 export const icons = {
     video: VideoCameraFrontOutlinedIcon,
@@ -28,4 +31,7 @@ export const icons = {
     share: ShareIcon,
     search: SearchIcon,
     account: AccountCircleIcon,
+    remove: CancelPresentationOutlinedIcon,
+    checked: CheckCircleOutlineOutlinedIcon,
+    back: KeyboardBackspaceIcon,
 }

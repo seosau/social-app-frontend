@@ -13,7 +13,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       <ReduxProvider>
         <HydrateUser />
         {children}
-        {process.env.NODE_ENV === 'development' && <ReactQueryDevtools />}
+        {process.env.NEXT_PUBLIC_NODE_ENV === 'development' && <ReactQueryDevtools />}
       </ReduxProvider>
     </QueryClientProvider>
   );

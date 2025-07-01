@@ -36,7 +36,6 @@ type FormData = yup.InferType<typeof schema>
 const createComment = async (data: FormData) => {
   try {
     const res = await postApi.createComment(data as ICommentCreateFormData)
-    console.log('--------------------------', res)
     alert('Reply successfully!')
   } catch (err) {
     console.error('Reply error: ', err)

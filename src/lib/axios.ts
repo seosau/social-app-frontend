@@ -1,9 +1,9 @@
 import axios from "axios";
 
 export const instance = axios.create({
-  // baseURL: process.env.SERVER_API_URL,
+  baseURL: process.env.NEXT_PUBLIC_SERVER_API_URL,
   // baseURL: 'https://intern-project-be-production.up.railway.app/api',
-  baseURL: 'http://localhost:4000/api',
+  // baseURL: 'http://localhost:4000/api',
   withCredentials: true, 
 });
 
