@@ -1,15 +1,20 @@
 'use client'
 
-import { hydrateUserFromStorage } from "@/lib/redux/features/userSlice";
+import { useGetMe } from "@/hooks/useGetMe";
+import { setUser } from "@/lib/redux/features/userSlice";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux"
 
 export default function HydateUser() {
     const dispatch = useDispatch();
 
+    const {user} = useGetMe()
+
     useEffect(() => {
-        dispatch(hydrateUserFromStorage());
-    }, [dispatch]);
+        if(!!user) {
+            dispatch(setUser(user))
+        }
+    }, [user]);
 
     return null;
 }

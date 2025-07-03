@@ -65,12 +65,22 @@ export default function ActionsList(props: ActionsListProps) {
               aria-expanded={open ? 'true' : undefined}
               onClick={handleClick}
               sx={{
-                border: 'solid',
+                border: 2,
                 borderColor: grey[300],
                 bgcolor: 'background.paper' ,
+                width: 40,
+                height: 40,
+                minWidth: 20,
+                borderRadius: "50%",
+                padding: 0,
               }}
             >
-              <icons.more />
+              <icons.more sx={{
+                width: 20,
+                height: 20,
+                borderRadius: "50%",
+                margin: 0
+              }}/>
             </Button>
             <Menu
               id="basic-menu"

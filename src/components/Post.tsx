@@ -17,6 +17,8 @@ import { ICommentCreateFormData, ICommentListExtra } from "@/interfaces/comment.
 import * as yup from "yup";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/redux/store";
 
 
 const interactButtonSx = {
@@ -79,7 +81,8 @@ const getComments = async (postId: string) => {
 }
 
 export function Post({ post }: Post) {
-    const [user, setUser] = useState<IUser>();
+    // const [user, setUser] = useState<IUser>();
+    const user = useSelector((state: RootState) => state.user.user)
     const [likeCount, setLikeCount] = useState<number>(post.likeCount ?? 0);
 
     const [isLiked, setIsLiked] = useState<boolean>(false);
@@ -194,19 +197,7 @@ export function Post({ post }: Post) {
             console.error(err)
         }
     }
-
-    useEffect(() => {
-        const userExisted = localStorage.getItem('user');
-        if (userExisted) {
-            setUser(JSON.parse(userExisted));
-        }
-    }, [])
-
-    // useEffect(() => {
-    //     // setVisibleCommentInput(true)
-    //     setVisibleComment(true)
-    // }, [comments])
-
+    
     useEffect(() => {
         const index = post.likedBy.findIndex(likedUser => likedUser.id === user?.id);
         if (index > -1) {

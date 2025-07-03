@@ -6,12 +6,14 @@ import { Avatar, Box, Button } from "@mui/material";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import ChatComponent from "./chat/Chat";
+import { useLogout } from "@/hooks/useLogOut";
+import { toast } from "react-toastify";
 
 export function RightSide() {
     const user = useSelector((state: RootState) => state.user.user);
-    const dispatch = useDispatch();
+    const {isPending, logout} = useLogout()
     const handleLogout = () => {
-        dispatch(clearUser())
+        logout();
     }
     return (
         <Box
@@ -74,6 +76,7 @@ export function RightSide() {
                             variant="contained"
                             color="error"
                             onClick={handleLogout}
+                            loading={isPending}
                         >
                             Logout
                         </Button>
