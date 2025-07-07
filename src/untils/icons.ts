@@ -15,6 +15,8 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import CancelPresentationOutlinedIcon from '@mui/icons-material/CancelPresentationOutlined';
 import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutlineOutlined';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
+import EastIcon from '@mui/icons-material/East';
+import WestIcon from '@mui/icons-material/West';
 
 export const icons = {
     video: VideoCameraFrontOutlinedIcon,
@@ -34,4 +36,6 @@ export const icons = {
     remove: CancelPresentationOutlinedIcon,
     checked: CheckCircleOutlineOutlinedIcon,
     back: KeyboardBackspaceIcon,
+    east: EastIcon,
+    west: WestIcon,
 }

@@ -6,6 +6,7 @@ import { IPost } from "@/interfaces/post.interfaces";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useQuery } from "@tanstack/react-query";
 import { postApi } from "@/apis/post.api";
+import { StoryComp } from "../story/StoryComp";
 
 
 const getPosts = async (keyword: string = "") => {
@@ -66,9 +67,11 @@ export function HomeComp() {
         gap={2}
         width={"100%"}
         height={"100%"}
+        maxWidth={"47%"}
         flex={2}
       >
           <NewPostOptions />
+          <StoryComp />
           {isLoading && <div>Loading...</div>}
           {error && <div>Error: Loading failed!!!</div>}
           {data && data.map((post: IPost) => (
