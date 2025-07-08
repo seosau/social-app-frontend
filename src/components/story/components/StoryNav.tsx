@@ -9,6 +9,7 @@ import { Avatar } from '@mui/material';
 import { formatTimeAgo } from '@/untils';
 import { blue } from '@mui/material/colors';
 import { StoryDetail } from './StoryDetail';
+import { useGetAllStory } from '@/hooks/useGetAllStory';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -37,14 +38,9 @@ function TabPanel(props: TabPanelProps) {
     );
 }
 
-function a11yProps(index: number) {
-    return {
-        id: `vertical-tab-${index}`,
-        'aria-controls': `vertical-tabpanel-${index}`,
-    };
-}
-
 export function StoryNav() {
+    const { allStory } = useGetAllStory()
+
     const [value, setValue] = React.useState(0);
 
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -63,9 +59,9 @@ export function StoryNav() {
                 aria-label="Vertical tabs example"
                 sx={{ borderRight: 1, borderColor: 'divider' }}
             >
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25].map((value) => (
+                {!!allStory && allStory.map((story) => (
                     <Tab
-                        key={value}
+                        key={story.id}
                         label={
                             <Box
                                 display={'flex'}
@@ -96,16 +92,15 @@ export function StoryNav() {
                             textTransform: 'none',
                             width: 360,
                         }}
-                        {...a11yProps(0)}
                     />
                 ))}
             </Tabs>
-            {[1, 2, 3, 4, 5, 6, 7].map((valuee, index) => (
+            {!!allStory && allStory.map((story, index) => (
                 <TabPanel
                     value={value}
                     index={index}
                 >
-                    <StoryDetail />
+                    <StoryDetail story={story} activeTab={value} setActiveTab={setValue} numberOfStory={allStory.length}/>
                 </TabPanel>
             ))}
         </Box>

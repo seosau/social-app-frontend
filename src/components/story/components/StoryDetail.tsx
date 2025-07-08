@@ -1,9 +1,17 @@
-import { formatTimeAgo, icons } from "@/untils";
+import { IStory } from "@/interfaces/story.interfaces";
+import { formatTimeAgo, formatTimeAgoUTC7, icons } from "@/untils";
 import { Avatar, Box, Button, LinearProgress } from "@mui/material";
 import { blue, common } from "@mui/material/colors";
 import { useEffect, useState } from "react";
 
-export function StoryDetail() {
+type StoryDetailProps = {
+    story: IStory,
+    activeTab: number,
+    setActiveTab: React.Dispatch<React.SetStateAction<number>>,
+    numberOfStory: number,
+}
+
+export function StoryDetail({story, activeTab, setActiveTab, numberOfStory} : StoryDetailProps) {
     const [progress, setProgress] = useState(0);
 
     useEffect(() => {
@@ -11,6 +19,11 @@ export function StoryDetail() {
             setProgress((prev) => {
                 if (prev >= 100) {
                     clearInterval(timer);
+                    setTimeout(() => {
+                        if (activeTab < numberOfStory - 1) {
+                            setActiveTab(activeTab + 1);
+                        }
+                    }, 300); // đợi thêm 150ms cho chắc
                     return prev;
                 }
                 return prev + 1;
@@ -74,7 +87,7 @@ export function StoryDetail() {
                         alignItems={'flex-start'}
                     >
                         <span className='truncate' >Ma Seo Sau</span>
-                        <span>{formatTimeAgo('2025-07-02T06:38:27.704Z')}</span>
+                        <span>{formatTimeAgoUTC7(story.createdAt)}</span>
                     </Box>
                 </Box>
                 <Box
@@ -85,7 +98,7 @@ export function StoryDetail() {
                     height={"100%"}
                 >
                     <img 
-                        src='https://res.cloudinary.com/dmwr1iglt/image/upload/v1751438306/upload/iqyf72gqvfuik9dyhmex.png' 
+                        src={story.image} 
                         loading="lazy"
                         className="object-scale-down w-full flex justify-center items-center"
                     />
