@@ -44,6 +44,8 @@ export function StoryDetail({story, activeTab, setActiveTab, numberOfStory} : St
             gap={5}
         >
             <Button
+                onClick={() => setActiveTab(activeTab - 1)}
+                disabled = {activeTab === 0}
                 sx={{
                     width: 70,
                     height: 70,
@@ -105,6 +107,8 @@ export function StoryDetail({story, activeTab, setActiveTab, numberOfStory} : St
                 </Box>
             </Box>
             <Button
+                onClick={() => setActiveTab(activeTab + 1)}
+                disabled = {activeTab === numberOfStory-1}
                 sx={{
                     width: 70,
                     height: 70,

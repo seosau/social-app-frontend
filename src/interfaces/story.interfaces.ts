@@ -9,3 +9,7 @@ export interface IStory {
     deletedAt: string | null;
     user: IUser    
 }
+
+export interface IStoryCreateFormData {
+    file: File
+}

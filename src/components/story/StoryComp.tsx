@@ -4,8 +4,10 @@ import { Box, Grid, Paper } from "@mui/material";
 import React from "react";
 import { StoryCard } from "./card/StoryCard";
 import { IStory } from "@/interfaces/story.interfaces";
-import { blue } from "@mui/material/colors";
+import { blue, grey } from "@mui/material/colors";
 import { useGetAllStory } from "@/hooks/useGetAllStory";
+import Link from "next/link";
+import { icons } from "@/untils";
 
 export function StoryComp() {
     const { allStory } = useGetAllStory()
@@ -34,16 +36,29 @@ export function StoryComp() {
                 }}
             >
                 <Grid>
-                    <Paper
-                        sx={{
-                            height: 140,
-                            width: 100,
-                            backgroundColor: '#fff',
-                            // ...theme.applyStyles('dark', {
-                            //     backgroundColor: '#1A2027',
-                            // }),
-                        }}
-                    ></Paper>
+                    <Link href={'/story/create'}>
+                        <Paper
+                            sx={{
+                                height: 140,
+                                width: 100,
+                                backgroundColor: '#fff',
+                                // ...theme.applyStyles('dark', {
+                                //     backgroundColor: '#1A2027',
+                                // }),
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}
+                        >
+                            {/* <Box></Box> */}
+                            <icons.addBox sx={{
+                                color: blue[500],
+                                width: 80,
+                                height: 80,
+                                opacity: 0.5
+                            }}/>
+                        </Paper>
+                    </Link>
                 </Grid>
                 {!!allStory && allStory.map((story) => (
                     <Grid key={story.id}>

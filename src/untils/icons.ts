@@ -17,6 +17,11 @@ import CheckCircleOutlineOutlinedIcon from '@mui/icons-material/CheckCircleOutli
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import EastIcon from '@mui/icons-material/East';
 import WestIcon from '@mui/icons-material/West';
+import AddBoxIcon from '@mui/icons-material/AddBox';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import NotesIcon from '@mui/icons-material/Notes';
+import FormatSizeIcon from '@mui/icons-material/FormatSize';
+import PublishIcon from '@mui/icons-material/Publish';
 
 export const icons = {
     video: VideoCameraFrontOutlinedIcon,
@@ -38,4 +43,9 @@ export const icons = {
     back: KeyboardBackspaceIcon,
     east: EastIcon,
     west: WestIcon,
+    addBox: AddBoxIcon,
+    addCircle: AddCircleOutlineIcon,
+    note: NotesIcon,
+    fontSize: FormatSizeIcon,
+    publish: PublishIcon,
 }
