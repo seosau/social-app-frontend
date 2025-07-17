@@ -3,12 +3,14 @@
 import { storyApi } from "@/apis/story.api";
 import { IStory } from "@/interfaces/story.interfaces";
 import { useQuery } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export function useGetAllStory () {
+    const params = useParams<{slug: string}>()
     const queryData = useQuery({
         queryKey: ['allStory'],
-        queryFn: () => storyApi.getAll(),
+        queryFn: () => storyApi.getAll(params.slug),
     })
 
     const [allStory, setAllStory] = useState<IStory[]>()

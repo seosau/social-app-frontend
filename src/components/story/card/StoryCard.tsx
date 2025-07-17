@@ -30,7 +30,7 @@ export function StoryCard({
                     <Link href={`/profile/${story.userId}`}>
                         <Avatar
                             alt="Remy Sharp"
-                            src={story.image}
+                            src={story.user.image}
                             sx={{
                                 width: 40,
                                 height: 40,
