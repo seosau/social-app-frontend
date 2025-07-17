@@ -75,7 +75,7 @@ export function StoryDetail({story, activeTab, setActiveTab, numberOfStory} : St
                     paddingX={1}
                 >
                     <Avatar
-                        src='https://res.cloudinary.com/dmwr1iglt/image/upload/v1751438306/upload/iqyf72gqvfuik9dyhmex.png'
+                        src={story.user.image}
                         sx={{
                             // border: 4,
                             // borderColor: blue[500]
