@@ -84,6 +84,9 @@ export function LeftSide({ keyword, onKeywordChange }: LeftSideProps) {
       padding={2}
       gap={2}
       overflow={'scroll'}
+      sx={{
+          scrollbarWidth: 'none',
+      }}
     >
       <Box
         width={"100%"}

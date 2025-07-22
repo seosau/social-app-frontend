@@ -2,12 +2,14 @@
 
 import { clearUser } from "@/lib/redux/features/userSlice";
 import { RootState } from "@/lib/redux/store";
-import { Avatar, Box, Button } from "@mui/material";
+import { Avatar, Box, Button, Divider } from "@mui/material";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
 import ChatComponent from "./chat/Chat";
 import { useLogout } from "@/hooks/useLogOut";
 import { toast } from "react-toastify";
+import { blue } from "@mui/material/colors";
+import ListUser from "./chat/ListUser";
 
 export function RightSide() {
     const user = useSelector((state: RootState) => state.user.user);
@@ -33,7 +35,7 @@ export function RightSide() {
             borderRadius={2}
             boxShadow={1}
             padding={2}
-            gap={2}
+            // gap={2}
         >
             <Box
                 display="flex"
@@ -42,7 +44,7 @@ export function RightSide() {
                 justifyContent={"space-between"}
                 // position={"fixed"}
                 width={"100%"}
-                height={"100vh"}
+                // height={"100vh"}
                 // border={1}
                 // borderColor={"grey.300"}
                 // borderRadius={2}
@@ -102,6 +104,11 @@ export function RightSide() {
                 )}
             </Box>    
             <Box
+                width={'100%'}
+            >
+                <Divider variant="fullWidth"/>
+            </Box>
+            <Box
                 // position={"fixed"}
                 // bottom={0}
                 // // left={0}
@@ -118,8 +125,12 @@ export function RightSide() {
                 // borderColor={"grey.300"}
                 // borderRadius={2}
                 // boxShadow={1}
+                bgcolor={blue[200]}
+                width={"100%"}
+                height={"100%"}
             >
                 <ChatComponent receiverId={''} />
+                <ListUser />
             </Box>        
         </Box>
     )

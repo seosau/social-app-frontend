@@ -74,7 +74,7 @@ const ChatComponent: React.FC<{ receiverId: string }> = () => {
 //   };
 
   return (
-    <div className="flex flex-col h-[500px] w-full max-w-2xl mx-auto border border-gray-300 rounded-lg shadow-lg bg-white">
+    <div className="flex flex-col h-[500px] w-full max-w-sm mx-auto border border-gray-300 rounded-lg shadow-lg bg-white fixed z-10 bottom-5">
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {/* {messages.map((msg) => ( */}
           <div

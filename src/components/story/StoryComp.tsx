@@ -31,7 +31,9 @@ export function StoryComp() {
                     justifyContent: "start",
                     flexWrap: "nowrap",
                     overflowX: "scroll",
-                    padding: 1
+                    overflowY: "hidden",
+                    padding: 1,
+                    scrollbarWidth: 'none',
 
                 }}
             >
