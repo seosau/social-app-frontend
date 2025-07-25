@@ -1,7 +1,7 @@
 'use client'
 
 import { Avatar, Box, Button, Typography, ImageList, ImageListItem, Divider, colors, Menu, MenuItem, TextField } from "@mui/material";
-import { icons } from "@/untils";
+import { formatTimeAgo, icons } from "@/untils";
 import Link from "next/link";
 import { IUser } from "@/interfaces/user.interfaces";
 import { IPost } from "@/interfaces/post.interfaces";
@@ -267,7 +267,7 @@ export function Post({ post }: Post) {
                             width={"100%"}
                             textAlign={"left"}
                         >
-                            April 28, 12:30 PM
+                            {formatTimeAgo(post.createdAt)}
                         </Typography>
                     </Box>
                 </Box>

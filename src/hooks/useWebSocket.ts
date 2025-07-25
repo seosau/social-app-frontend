@@ -1,28 +1,17 @@
 'use client'
+import { IMessage } from '@/interfaces/chat.interfaces';
 import { INotification } from '@/interfaces/notification.interfaces';
+import { RootState } from '@/lib/redux/store';
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import io, { Socket } from 'socket.io-client';
-
-// interface Notification {
-//   id: string;
-//   message: string;
-//   type: string;
-//   timestamp: string;
-// }
 
 export const useWebSocket = () => {
     const [socket, setSocket] = useState<Socket | null>(null);
     const [notifications, setNotifications] = useState<INotification[]>([]);
-    const [user, setUser] = useState<any>(null)
+    const user = useSelector((state: RootState) => state.user.user);
+    const [message, setMessage] = useState<IMessage>();
 
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            const userFromStorage = localStorage.getItem('user')
-            if (userFromStorage) {
-                setUser(JSON.parse(userFromStorage))
-            }
-        }
-    }, [])
     useEffect(() => {
         if (!user || !user.id) return
         const userId = user.id
@@ -35,6 +24,7 @@ export const useWebSocket = () => {
             reconnectionDelay: 1000,
             withCredentials: true
         });
+        console.log('Connecting to WebSocket server...', socketIo);
 
         setSocket(socketIo);
 
@@ -46,7 +36,14 @@ export const useWebSocket = () => {
 
         // Listen for notifications
         socketIo.on('notification', (data: INotification) => {
+            console.log('Notifffffffffffff', data.message);
             setNotifications((prev) => [data, ...prev]);
+        });
+
+        // Listen for mesages from the server
+        socketIo.on('websocket_chat_name', (data: {message: IMessage}) => {
+            console.log('Messageeeeeeeeeeeeeeeeeeee', data.message);
+            setMessage(data.message);
         });
 
         // Handle subscription confirmation
@@ -66,5 +63,5 @@ export const useWebSocket = () => {
         };
     }, [user]);
 
-    return { socket, notifications };
+    return { socket, notifications, message, setMessage };
 };

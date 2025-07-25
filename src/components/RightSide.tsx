@@ -10,6 +10,8 @@ import { useLogout } from "@/hooks/useLogOut";
 import { toast } from "react-toastify";
 import { blue } from "@mui/material/colors";
 import ListUser from "./chat/ListUser";
+import { useWebSocket } from "@/hooks/useWebSocket";
+import { useEffect } from "react";
 
 export function RightSide() {
     const user = useSelector((state: RootState) => state.user.user);
@@ -17,6 +19,21 @@ export function RightSide() {
     const handleLogout = () => {
         logout();
     }
+    const { message } = useWebSocket();
+    useEffect(() => {
+        if (message) {
+            toast.info(`New message: ${message.content}`, {
+                position: 'top-center',
+                autoClose: 5000,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: 'colored',
+            });
+        }
+    }, [message]);
     return (
         <Box
             display="flex"

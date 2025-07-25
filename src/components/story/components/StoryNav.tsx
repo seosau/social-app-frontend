@@ -99,6 +99,7 @@ export function StoryNav() {
                 <TabPanel
                     value={value}
                     index={index}
+                    key={story.id}
                 >
                     <StoryDetail story={story} activeTab={value} setActiveTab={setValue} numberOfStory={allStory.length}/>
                 </TabPanel>

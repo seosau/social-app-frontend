@@ -9,6 +9,7 @@ export interface IPost {
     likedBy: [IUser],
     likeCount: number,
     commentCount: number,
+    createdAt: string,
 }
 
 export interface IPostFormData {
