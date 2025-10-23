@@ -10,7 +10,7 @@ import { Fragment } from 'react';
 import { blue } from '@mui/material/colors';
 import { Button } from '@mui/material';
 
-export default function ListUser() {
+export default function UserList() {
     return (
         <List
             sx={{
@@ -32,7 +32,7 @@ export default function ListUser() {
                             width: '100%',
                         }}
                     >
-                        <ListItem alignItems="flex-start">
+                        <ListItem alignItems="center">
                             <ListItemAvatar>
                                 <Avatar alt="Remy Sharp" src="https://res.cloudinary.com/dmwr1iglt/image/upload/v1751265284/upload/vuqt3ylw3ia4eyzo51wv.png" />
                             </ListItemAvatar>
@@ -52,11 +52,11 @@ export default function ListUser() {
                                         </Typography>
                                     </Fragment>
                                 }
-                                secondary={
-                                    <Fragment>
-                                        Toi nay ranh khong ban e
-                                    </Fragment>
-                                }
+                                // secondary={
+                                //     <Fragment>
+                                //         Toi nay ranh khong ban e
+                                //     </Fragment>
+                                // }
                             />
                         </ListItem>
                     </Button>

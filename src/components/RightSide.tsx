@@ -9,11 +9,16 @@ import ChatComponent from "./chat/Chat";
 import { useLogout } from "@/hooks/useLogOut";
 import { toast } from "react-toastify";
 import { blue } from "@mui/material/colors";
-import ListUser from "./chat/ListUser";
+import ConversationList from "./chat/ConversationList";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import { useEffect } from "react";
+import UserList from "./chat/UserList";
+import { useGetOneConversation } from "@/hooks/useGetOneConversation";
+import { queryClient } from "@/lib/queryClient";
+import { IChat } from "@/interfaces/chat.interfaces";
 
 export function RightSide() {
+    const chat = queryClient.getQueryData<IChat>(['oneConversation'])
     const user = useSelector((state: RootState) => state.user.user);
     const {isPending, logout} = useLogout()
     const handleLogout = () => {
@@ -126,29 +131,64 @@ export function RightSide() {
                 <Divider variant="fullWidth"/>
             </Box>
             <Box
-                // position={"fixed"}
-                // bottom={0}
-                // // left={0}
-                // right={0}
-                // width={"100%"}
-                // height={"100vh"}
-                display={"flex"}
-                flexDirection={"column"}
-                alignItems={"start"}
-                justifyContent={"start"}
-                // padding={2}
-                // gap={2}
-                // border={1}
-                // borderColor={"grey.300"}
-                // borderRadius={2}
-                // boxShadow={1}
-                bgcolor={blue[200]}
-                width={"100%"}
-                height={"100%"}
+                sx={{
+                    overflowY: 'scroll',
+                    scrollbarWidth: 'none',
+                }}
             >
-                <ChatComponent receiverId={''} />
-                <ListUser />
-            </Box>        
+                <Box
+                    // position={"fixed"}
+                    // bottom={0}
+                    // // left={0}
+                    // right={0}
+                    // width={"100%"}
+                    // height={"100vh"}
+                    display={"flex"}
+                    flexDirection={"column"}
+                    alignItems={"start"}
+                    justifyContent={"start"}
+                    // padding={2}
+                    // gap={2}
+                    // border={1}
+                    // borderColor={"grey.300"}
+                    // borderRadius={2}
+                    // boxShadow={1}
+                    bgcolor={blue[200]}
+                    width={"100%"}
+                    height={"50%"}
+                >
+                    {!!chat && <ChatComponent receiverId={''} />}
+                    <ConversationList />
+                </Box>
+                <Box
+                    width={'100%'}
+                >
+                    <Divider variant="fullWidth"/>
+                </Box>
+                <Box
+                    // position={"fixed"}
+                    // bottom={0}
+                    // // left={0}
+                    // right={0}
+                    // width={"100%"}
+                    // height={"100vh"}
+                    display={"flex"}
+                    flexDirection={"column"}
+                    alignItems={"start"}
+                    justifyContent={"start"}
+                    // padding={2}
+                    // gap={2}
+                    // border={1}
+                    // borderColor={"grey.300"}
+                    // borderRadius={2}
+                    // boxShadow={1}
+                    bgcolor={blue[200]}
+                    width={"100%"}
+                    height={"50%"}
+                >
+                    <UserList />
+                </Box>                
+            </Box>
         </Box>
     )
 }

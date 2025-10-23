@@ -1,6 +1,9 @@
 'use client';
 
+import { useGetOneConversation } from '@/hooks/useGetOneConversation';
+import { RootState } from '@/lib/redux/store';
 import React from 'react';
+import { useSelector } from 'react-redux';
 // import { useState, useEffect, useRef } from 'react';
 // import { useSession } from 'next-auth/react';
 
@@ -73,30 +76,32 @@ const ChatComponent: React.FC<{ receiverId: string }> = () => {
 //     }
 //   };
 
+  const {oneConversation} = useGetOneConversation();
+  const user = useSelector((state: RootState) => state.user.user);
   return (
     <div className="flex flex-col h-[500px] w-full max-w-sm mx-auto border border-gray-300 rounded-lg shadow-lg bg-white fixed z-10 bottom-5">
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {/* {messages.map((msg) => ( */}
+        {!!oneConversation && !!oneConversation.messageList && oneConversation.messageList.map((msg) => (
           <div
-            // key={msg.id}
-            // className={`flex ${
-            //   msg.senderId === session?.user?.id ? 'justify-end' : 'justify-start'
-            // }`}
+            key={msg.id}
+            className={`flex ${
+              msg.senderId === user?.id ? 'justify-end' : 'justify-start'
+            }`}
           >
             <div
-            //   className={`max-w-xs p-3 rounded-lg ${
-            //     msg.senderId === session?.user?.id
-            //       ? 'bg-blue-500 text-white'
-            //       : 'bg-gray-200 text-gray-800'
-            //   }`}
+              className={`max-w-xs p-3 rounded-lg ${
+                msg.senderId === user?.id
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-gray-200 text-gray-800'
+              }`}
             >
-              {/* <p>{msg.content}</p>
+              <p>{msg.content}</p>
               <p className="text-xs opacity-70 mt-1">
-                {new Date(msg.timestamp).toLocaleTimeString()}
-              </p> */}
+                {new Date(msg.createdAt).toLocaleTimeString()}
+              </p>
             </div>
           </div>
-        {/* ))} */}
+        ))}
         {/* <div ref={messagesEndRef} /> */}
       </div>
       <div className="p-4 border-t border-gray-300">
