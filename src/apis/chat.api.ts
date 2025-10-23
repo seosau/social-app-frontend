@@ -9,7 +9,7 @@ export const chatApi = {
         const response = await instance.get('/chat');
         return response.data;
     },
-    async getMessages(conversationId: string) {
+    async getOneConversation(conversationId: string) {
         const response = await instance.get(`/chat/${conversationId}`);
         return response.data;
     },

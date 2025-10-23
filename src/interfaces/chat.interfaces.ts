@@ -1,31 +1,37 @@
 import { IUser } from "./user.interfaces";
 
 export interface IConversation {
-    id: string;
-    name: string;
-    type: 'PERSON_TO_PERSON' | 'GROUP_CONVERSATION';
-    createdAt: string;
-    updatedAt: string;
-    deletedAt?: string | null;
-    members: IUser[];
+  id: string;
+  memberIds: string[];
+  type: ConversationType;
+  updatedAt: string;
+  createdAt: string;
+  deletedAt: string;
+  members: IUser[];
 }
 
 export interface IMessage {
-    id: string;
-    conversationId: string;
-    senderId: string;
-    content: string;
-    createdAt: string;
-    updatedAt: string;
-    deletedAt?: string | null;
+  id: string;
+  senderId: string;
+  conversationId: string;
+  content: string;
+  updatedAt: string;
+  createdAt: string;
+  deletedAt: string;
 }
 
 export interface IChat {
-    id: string;
     conversation: IConversation;
-    messages: IMessage[];
-    // lastMessage?: IMessage | null;
-    // unreadCount: number;
-    createdAt: string;
-    updatedAt: string;
+    messageList: IMessage[];
+}
+
+export interface IConversationList {
+    conversations: IChat[];
+}
+
+export enum ConversationType {
+  CONVERSATION_UNSPECIFIED = 0,
+  PERSON_TO_PERSON = 1,
+  GROUP_CONVERSATION = 2,
+  UNRECOGNIZED = -1,
 }
